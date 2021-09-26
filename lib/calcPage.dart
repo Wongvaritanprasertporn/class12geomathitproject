@@ -6,18 +6,17 @@ enum KiteAreaFormula { fromCD, fromAB }
 enum TriangleAreaFormula { fromAH, fromSide }
 
 class CalcPage extends StatefulWidget {
-  CalcPage({Key? key, required this.pageStatus}) : super(key: key);
-
   int pageStatus = 0;
+  CalcPage({Key? key, required this.pageStatus}) : super(key: key);
 
   @override
   _CalcPage createState() => _CalcPage(pageStatus);
 }
 
 class _CalcPage extends State<CalcPage> {
+  int pageStatus = 0;
   _CalcPage(pageStatus);
 
-  int pageStatus = 0;
   RhombusAreaFormula? _rhombusAreaFormula = RhombusAreaFormula.fromAH;
   KiteAreaFormula? _kiteAreaFormula = KiteAreaFormula.fromCD;
   TriangleAreaFormula? _triangleAreaFormula = TriangleAreaFormula.fromAH;
