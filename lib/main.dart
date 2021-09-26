@@ -1,5 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:geomath/calcPage.dart';
+import 'package:geomath/CalcSubPage/square.dart';
+import 'package:geomath/CalcSubPage/rectangle.dart';
+import 'package:geomath/CalcSubPage/paralellogram.dart';
+import 'package:geomath/CalcSubPage/rhombus.dart';
+import 'package:geomath/CalcSubPage/trapezoid.dart';
+import 'package:geomath/CalcSubPage/kite.dart';
+import 'package:geomath/CalcSubPage/trapezium.dart';
+import 'package:geomath/CalcSubPage/triangle.dart';
+import 'package:geomath/CalcSubPage/rtriangle.dart';
+import 'package:geomath/CalcSubPage/circle.dart';
+import 'package:geomath/CalcSubPage/ellipse.dart';
 import 'shapePage.dart';
 
 void main() => runApp(new MyApp());
@@ -65,9 +75,9 @@ class _MyHomePageState extends State<MyHomePage> {
               ]),
             ),
             body: TabBarView(children: [
-              Column(
-                children: [CalcPage(pageStatus: _selectedPage)] 
-              ),
+              Column(children: [
+                selectCalcPage(),
+              ]),
               SingleChildScrollView(
                 child: ShapePage(_selectedPage),
               )
@@ -88,5 +98,32 @@ class _MyHomePageState extends State<MyHomePage> {
       _selectedPage = item;
       title = shapeList[item];
     });
+  }
+
+  selectCalcPage() {
+    switch (_selectedPage) {
+      case 0:
+        return SquareCalcPage();
+      case 1:
+        return RectangleCalcPage();
+      case 2:
+        return ParaCalcPage();
+      case 3:
+        return RhombusCalcPage();
+      case 4:
+        return TrapezoidCalcPage();
+      case 5:
+        return KiteCalcPage();
+      case 6:
+        return TrapeziumCalcPage();
+      case 7:
+        return TriangleCalcPage();
+      case 8:
+        return RtriCalcPage();
+      case 9:
+        return CircleCalcPage();
+      case 10:
+        return EllipseCalcPage();
+    }
   }
 }
