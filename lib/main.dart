@@ -76,7 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             body: TabBarView(children: [
               Column(children: [
-                selectCalcPage(),
+                selectCalcPage(_selectedPage),
               ]),
               SingleChildScrollView(
                 child: ShapePage(_selectedPage),
@@ -100,7 +100,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  selectCalcPage() {
+  selectCalcPage(_selectedPage) {
     switch (_selectedPage) {
       case 0:
         return SquareCalcPage();
