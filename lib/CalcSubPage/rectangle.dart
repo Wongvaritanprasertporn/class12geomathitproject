@@ -11,29 +11,32 @@ class RectangleCalcPage extends StatefulWidget {
 class _RectangleCalcPage extends State<RectangleCalcPage> {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Column(
-          children: [
-            new TextField(
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Column(
+        children: [
+          Column(
+            children: [
+              TextField(
                 decoration: new InputDecoration(labelText: "a (Height)"),
                 keyboardType: TextInputType.number,
                 inputFormatters: <TextInputFormatter>[
                   FilteringTextInputFormatter.digitsOnly
                 ]),
-            TextField(
-              onChanged: (text) {
-                print("$text");
-              },
-              decoration: new InputDecoration(labelText: "b (Width)"),
-              keyboardType: TextInputType.number,
-              inputFormatters: <TextInputFormatter>[
-                FilteringTextInputFormatter.digitsOnly
-              ],
-            )
-          ],
-        )
-      ],
+              TextField(
+                onChanged: (text) {
+                  print("$text");
+                },
+                decoration: new InputDecoration(labelText: "b (Width)"),
+                keyboardType: TextInputType.number,
+                inputFormatters: <TextInputFormatter>[
+                  FilteringTextInputFormatter.digitsOnly
+                ],
+              )
+            ],
+          )
+        ],
+      ),
     );
   }
 }
