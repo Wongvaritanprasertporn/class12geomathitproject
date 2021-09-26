@@ -83,7 +83,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   onSelected(BuildContext context, item) {
-    print("This is : $item }");
+    print("This is : $item");
     setState(() {
       _selectedPage = item;
       title = shapeList[item];
