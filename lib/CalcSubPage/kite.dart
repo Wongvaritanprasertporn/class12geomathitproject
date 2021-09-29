@@ -15,71 +15,84 @@ class _KiteCalcPage extends State<KiteCalcPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Column(
-          children: [
-            Column(
-              children: <Widget>[
-                ListTile(
-                  title: const Text('เมื่อทราบความยาวของรูป'),
-                  leading: Radio<KiteAreaFormula>(
-                    value: KiteAreaFormula.fromCD,
-                    groupValue: _kiteAreaFormula,
-                    onChanged: (KiteAreaFormula? value) {
-                      setState(() {
-                        _kiteAreaFormula = value;
-                      });
-                    },
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Column(
+        children: [
+          Column(
+            children: [
+              Column(
+                children: <Widget>[
+                  ListTile(
+                    title: const Text('หาพื้นที่'),
+                    leading: Radio<KiteAreaFormula>(
+                      value: KiteAreaFormula.fromCD,
+                      groupValue: _kiteAreaFormula,
+                      onChanged: (KiteAreaFormula? value) {
+                        setState(() {
+                          _kiteAreaFormula = value;
+                        });
+                      },
+                    ),
                   ),
-                ),
-                ListTile(
-                  title: const Text('เมื่อทราบความยาวของด้าน'),
-                  leading: Radio<KiteAreaFormula>(
-                    value: KiteAreaFormula.fromAB,
-                    groupValue: _kiteAreaFormula,
-                    onChanged: (KiteAreaFormula? value) {
-                      setState(() {
-                        _kiteAreaFormula = value;
-                      });
-                    },
+                  ListTile(
+                    title: const Text('หาเส้นรอบรูป'),
+                    leading: Radio<KiteAreaFormula>(
+                      value: KiteAreaFormula.fromAB,
+                      groupValue: _kiteAreaFormula,
+                      onChanged: (KiteAreaFormula? value) {
+                        setState(() {
+                          _kiteAreaFormula = value;
+                        });
+                      },
+                    ),
                   ),
-                ),
-              ],
-            ),
-            Column(children: [
-              TextField(
-                  decoration: new InputDecoration(labelText: "c"),
-                  keyboardType: TextInputType.number,
-                  inputFormatters: <TextInputFormatter>[
-                    FilteringTextInputFormatter.digitsOnly
-                  ]),
-              TextField(
-                decoration: new InputDecoration(labelText: "d"),
-                keyboardType: TextInputType.number,
-                inputFormatters: <TextInputFormatter>[
-                  FilteringTextInputFormatter.digitsOnly
+                  getData()
                 ],
-              )
-            ]),
-            Column(children: [
-              TextField(
-                  decoration: new InputDecoration(labelText: "a"),
-                  keyboardType: TextInputType.number,
-                  inputFormatters: <TextInputFormatter>[
-                    FilteringTextInputFormatter.digitsOnly
-                  ]),
-              TextField(
-                decoration: new InputDecoration(labelText: "b"),
-                keyboardType: TextInputType.number,
-                inputFormatters: <TextInputFormatter>[
-                  FilteringTextInputFormatter.digitsOnly
-                ],
-              )
-            ]),
-          ],
-        )
-      ],
+              ),
+            ],
+          )
+        ],
+      ),
     );
+  }
+
+  getData() {
+    switch (_kiteAreaFormula) {
+      case KiteAreaFormula.fromCD:
+        return Column(children: [
+          TextField(
+              decoration: new InputDecoration(labelText: "c"),
+              keyboardType: TextInputType.number,
+              inputFormatters: <TextInputFormatter>[
+                FilteringTextInputFormatter.digitsOnly
+              ]),
+          TextField(
+            decoration: new InputDecoration(labelText: "d"),
+            keyboardType: TextInputType.number,
+            inputFormatters: <TextInputFormatter>[
+              FilteringTextInputFormatter.digitsOnly
+            ],
+          )
+        ]);
+      case KiteAreaFormula.fromAB:
+        return Column(children: [
+          TextField(
+              decoration: new InputDecoration(labelText: "a"),
+              keyboardType: TextInputType.number,
+              inputFormatters: <TextInputFormatter>[
+                FilteringTextInputFormatter.digitsOnly
+              ]),
+          TextField(
+            decoration: new InputDecoration(labelText: "b"),
+            keyboardType: TextInputType.number,
+            inputFormatters: <TextInputFormatter>[
+              FilteringTextInputFormatter.digitsOnly
+            ],
+          )
+        ]);
+      default:
+        print("Invalid");
+    }
   }
 }

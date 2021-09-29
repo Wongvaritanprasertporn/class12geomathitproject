@@ -15,82 +15,95 @@ class _TriangleCalcPage extends State<TriangleCalcPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Column(
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Column(
+        children: [
+          Column(
+            children: [
+              Column(children: <Widget>[
+                ListTile(
+                  title: const Text('เมื่อทราบความกว้างและความสูง'),
+                  leading: Radio<TriangleAreaFormula>(
+                    value: TriangleAreaFormula.fromAH,
+                    groupValue: _triangleAreaFormula,
+                    onChanged: (TriangleAreaFormula? value) {
+                      setState(() {
+                        _triangleAreaFormula = value;
+                      });
+                    },
+                  ),
+                ),
+                ListTile(
+                  title: const Text('เมื่อทราบความความยาวของด้านทั้งสาม'),
+                  leading: Radio<TriangleAreaFormula>(
+                    value: TriangleAreaFormula.fromSide,
+                    groupValue: _triangleAreaFormula,
+                    onChanged: (TriangleAreaFormula? value) {
+                      setState(() {
+                        _triangleAreaFormula = value;
+                      });
+                    },
+                  ),
+                ),
+              ]),
+            ],
+          ),
+          getData(),
+        ],
+      ),
+    );
+  }
+
+  getData() {
+    switch (_triangleAreaFormula) {
+      case TriangleAreaFormula.fromAH:
+        return Column(
           children: [
-            Column(children: <Widget>[
-              ListTile(
-                title: const Text('เมื่อทราบความกว้างและความสูง'),
-                leading: Radio<TriangleAreaFormula>(
-                  value: TriangleAreaFormula.fromAH,
-                  groupValue: _triangleAreaFormula,
-                  onChanged: (TriangleAreaFormula? value) {
-                    setState(() {
-                      _triangleAreaFormula = value;
-                    });
-                  },
-                ),
-              ),
-              ListTile(
-                title: const Text('เมื่อทราบความความยาวของด้านทั้งสาม'),
-                leading: Radio<TriangleAreaFormula>(
-                  value: TriangleAreaFormula.fromSide,
-                  groupValue: _triangleAreaFormula,
-                  onChanged: (TriangleAreaFormula? value) {
-                    setState(() {
-                      _triangleAreaFormula = value;
-                    });
-                  },
-                ),
-              ),
-            ]),
-            Column(
-              children: [
-                TextField(
-                  decoration: new InputDecoration(labelText: "a"),
-                  keyboardType: TextInputType.number,
-                  inputFormatters: <TextInputFormatter>[
-                    FilteringTextInputFormatter.digitsOnly
-                  ],
-                ),
-                TextField(
-                  decoration: new InputDecoration(labelText: "h (Height)"),
-                  keyboardType: TextInputType.number,
-                  inputFormatters: <TextInputFormatter>[
-                    FilteringTextInputFormatter.digitsOnly
-                  ],
-                )
+            TextField(
+              decoration: new InputDecoration(labelText: "a"),
+              keyboardType: TextInputType.number,
+              inputFormatters: <TextInputFormatter>[
+                FilteringTextInputFormatter.digitsOnly
               ],
             ),
-            Column(
-              children: [
-                TextField(
-                  decoration: new InputDecoration(labelText: "a"),
-                  keyboardType: TextInputType.number,
-                  inputFormatters: <TextInputFormatter>[
-                    FilteringTextInputFormatter.digitsOnly
-                  ],
-                ),
-                TextField(
-                  decoration: new InputDecoration(labelText: "b"),
-                  keyboardType: TextInputType.number,
-                  inputFormatters: <TextInputFormatter>[
-                    FilteringTextInputFormatter.digitsOnly
-                  ],
-                ),
-                TextField(
-                  decoration: new InputDecoration(labelText: "c"),
-                  keyboardType: TextInputType.number,
-                  inputFormatters: <TextInputFormatter>[
-                    FilteringTextInputFormatter.digitsOnly
-                  ],
-                )
+            TextField(
+              decoration: new InputDecoration(labelText: "h (Height)"),
+              keyboardType: TextInputType.number,
+              inputFormatters: <TextInputFormatter>[
+                FilteringTextInputFormatter.digitsOnly
               ],
             )
           ],
-        )
-      ],
-    );
+        );
+      case TriangleAreaFormula.fromSide:
+        return Column(
+          children: [
+            TextField(
+              decoration: new InputDecoration(labelText: "a"),
+              keyboardType: TextInputType.number,
+              inputFormatters: <TextInputFormatter>[
+                FilteringTextInputFormatter.digitsOnly
+              ],
+            ),
+            TextField(
+              decoration: new InputDecoration(labelText: "b"),
+              keyboardType: TextInputType.number,
+              inputFormatters: <TextInputFormatter>[
+                FilteringTextInputFormatter.digitsOnly
+              ],
+            ),
+            TextField(
+              decoration: new InputDecoration(labelText: "c"),
+              keyboardType: TextInputType.number,
+              inputFormatters: <TextInputFormatter>[
+                FilteringTextInputFormatter.digitsOnly
+              ],
+            )
+          ],
+        );
+      default:
+        print("invalid");
+    }
   }
 }

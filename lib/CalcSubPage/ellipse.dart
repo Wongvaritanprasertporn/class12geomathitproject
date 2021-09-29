@@ -13,23 +13,26 @@ class _EllipseCalcPage extends State<EllipseCalcPage> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Column(
-          children: [
-            TextField(
-              decoration: new InputDecoration(labelText: "a"),
-              keyboardType: TextInputType.number,
-              inputFormatters: <TextInputFormatter>[
-                FilteringTextInputFormatter.digitsOnly
-              ],
-            ),
-            TextField(
-              decoration: new InputDecoration(labelText: "b"),
-              keyboardType: TextInputType.number,
-              inputFormatters: <TextInputFormatter>[
-                FilteringTextInputFormatter.digitsOnly
-              ],
-            )
-          ],
+        Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Column(
+            children: [
+              TextField(
+                decoration: new InputDecoration(labelText: "a"),
+                keyboardType: TextInputType.number,
+                inputFormatters: <TextInputFormatter>[
+                  FilteringTextInputFormatter.digitsOnly
+                ],
+              ),
+              TextField(
+                decoration: new InputDecoration(labelText: "b"),
+                keyboardType: TextInputType.number,
+                inputFormatters: <TextInputFormatter>[
+                  FilteringTextInputFormatter.digitsOnly
+                ],
+              )
+            ],
+          ),
         )
       ],
     );
