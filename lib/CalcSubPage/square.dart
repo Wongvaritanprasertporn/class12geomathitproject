@@ -14,86 +14,17 @@ class SquareCalcPage extends StatefulWidget {
 class _SquareCalcPage extends State<SquareCalcPage> {
   SquareAreaFormula? _squareAreaFormula = SquareAreaFormula.fromA;
 
-  String numberFieldValA = "";
-  String numberFieldValB = "";
-  num aValueArea = 0;
-  num aValuePeri = 0;
-  num bValueArea = 0;
-
   @override
   void initState() {
     super.initState();
   }
 
-  void calculate(value) {
-    setState(() {
-      numberFieldValA = value;
-      print("number : $numberFieldValA");
-      aValueArea = pow(double.parse(numberFieldValA), 2);
-      aValuePeri = double.parse(numberFieldValA) * 4;
-    });
-  }
-
   getData() {
     switch (_squareAreaFormula) {
       case SquareAreaFormula.fromA:
-        return Column(
-          children: [
-            NumberField(
-              labelText: "a",
-              onChanged: (value) => calculate(value),
-              //key: UniqueKey(),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 10.0),
-              child: Column(
-                children: [
-                  Text(
-                    "พื้นที่",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                  ),
-                  Text(
-                    "$aValueArea",
-                    style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    "เส้นรอบรูป",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                  ),
-                  Text(
-                    "$aValuePeri",
-                    style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
-                  )
-                ],
-              ),
-            ),
-          ],
-        );
+        return CalcPageFromA();
       case SquareAreaFormula.fromB:
-        return Column(
-          children: [
-            NumberField(
-              labelText: "b",
-              onChanged: (value) => calculate(value),
-              //key: UniqueKey(),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 10.0),
-              child: Column(
-                children: [
-                  Text(
-                    "พื้นที่",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                  ),
-                  Text(
-                    "$bValueArea",
-                    style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
-                  )
-                ],
-              ),
-            ),
-          ],
-        );
+        return CalcPageFromB();
       default:
         print("Unknown square area formula");
     }
@@ -136,6 +67,95 @@ class _SquareCalcPage extends State<SquareCalcPage> {
           getData(),
         ],
       ),
+    );
+  }
+}
+
+class CalcPageFromA extends StatefulWidget {
+  CalcPageFromA({Key? key}) : super(key: key);
+
+  @override
+  _CalcPageFromA createState() => _CalcPageFromA();
+}
+
+class _CalcPageFromA extends State<CalcPageFromA> {
+  num numberFieldValA = 0;
+
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        NumberField(
+          labelText: "a",
+          onChanged: (value) => {
+            setState(() {
+              numberFieldValA = double.parse(value);
+            })
+          },
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 10.0),
+          child: Column(
+            children: [
+              Text(
+                "พื้นที่",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              ),
+              Text(
+                "${pow(numberFieldValA, 2)}",
+                style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
+              ),
+              Text(
+                "เส้นรอบรูป",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              ),
+              Text(
+                "${numberFieldValA * 4}",
+                style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
+              )
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class CalcPageFromB extends StatefulWidget {
+  CalcPageFromB({Key? key}) : super(key: key);
+
+  @override
+  _CalcPageFromB createState() => _CalcPageFromB();
+}
+
+class _CalcPageFromB extends State<CalcPageFromB> {
+  num numberFieldValB = 0;
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        NumberField(
+          labelText: "b",
+          onChanged: (value) => {
+            setState(() {
+              numberFieldValB = double.parse(value);
+            })
+          },
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 10.0),
+          child: Column(
+            children: [
+              Text(
+                "พื้นที่",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              ),
+              Text(
+                "${0.5 * pow(numberFieldValB, 2)}",
+                style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
+              )
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
