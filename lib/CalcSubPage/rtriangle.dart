@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:geomath/numberField.dart';
 
 class RtriCalcPage extends StatefulWidget {
   RtriCalcPage({Key? key}) : super(key: key);
@@ -9,6 +9,9 @@ class RtriCalcPage extends StatefulWidget {
 }
 
 class _RtriCalcPage extends State<RtriCalcPage> {
+  num a = 0;
+  num b = 0;
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -17,20 +20,28 @@ class _RtriCalcPage extends State<RtriCalcPage> {
           padding: const EdgeInsets.all(10.0),
           child: Column(
             children: [
-              TextField(
-                decoration: new InputDecoration(labelText: "a"),
-                keyboardType: TextInputType.number,
-                inputFormatters: <TextInputFormatter>[
-                  FilteringTextInputFormatter.digitsOnly
-                ],
+              NumberField(
+                  labelText: "a",
+                  onChanged: (value) => {
+                        setState(() {
+                          a = double.parse(value);
+                        })
+                      }),
+              NumberField(
+                  labelText: "b",
+                  onChanged: (value) => {
+                        setState(() {
+                          b = double.parse(value);
+                        })
+                      }),
+              Text(
+                "พื้นที่",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
               ),
-              TextField(
-                decoration: new InputDecoration(labelText: "b"),
-                keyboardType: TextInputType.number,
-                inputFormatters: <TextInputFormatter>[
-                  FilteringTextInputFormatter.digitsOnly
-                ],
-              )
+              Text(
+                "${0.5 * a * b}",
+                style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
+              ),
             ],
           ),
         )

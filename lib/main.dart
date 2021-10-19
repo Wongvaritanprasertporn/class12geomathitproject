@@ -75,9 +75,9 @@ class _MyHomePageState extends State<MyHomePage> {
               ]),
             ),
             body: TabBarView(children: [
-              Column(children: [
-                selectCalcPage(_selectedPage),
-              ]),
+              SingleChildScrollView(
+                child: selectCalcPage(_selectedPage),
+              ),
               SingleChildScrollView(
                 child: ShapePage(_selectedPage),
               )

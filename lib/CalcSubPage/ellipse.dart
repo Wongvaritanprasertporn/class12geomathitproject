@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:geomath/numberField.dart';
+import 'dart:math';
 
 class EllipseCalcPage extends StatefulWidget {
   EllipseCalcPage({Key? key}) : super(key: key);
@@ -9,6 +10,9 @@ class EllipseCalcPage extends StatefulWidget {
 }
 
 class _EllipseCalcPage extends State<EllipseCalcPage> {
+  num a = 0;
+  num b = 0;
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -17,19 +21,36 @@ class _EllipseCalcPage extends State<EllipseCalcPage> {
           padding: const EdgeInsets.all(10.0),
           child: Column(
             children: [
-              TextField(
-                decoration: new InputDecoration(labelText: "a"),
-                keyboardType: TextInputType.number,
-                inputFormatters: <TextInputFormatter>[
-                  FilteringTextInputFormatter.digitsOnly
-                ],
+              NumberField(
+                labelText: "a (Widest Radius)",
+                onChanged: (value) => {
+                  setState(() {
+                    a = double.parse(value);
+                  })
+                },
               ),
-              TextField(
-                decoration: new InputDecoration(labelText: "b"),
-                keyboardType: TextInputType.number,
-                inputFormatters: <TextInputFormatter>[
-                  FilteringTextInputFormatter.digitsOnly
-                ],
+              NumberField(
+                  labelText: "b (Shortest Radius)",
+                  onChanged: (value) => {
+                        setState(() {
+                          b = double.parse(value);
+                        })
+                      }),
+              Text(
+                "พื้นที่",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              ),
+              Text(
+                "${(pi * a * b) / 4}",
+                style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
+              ),
+              Text(
+                "เส้นรอบรูป",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              ),
+              Text(
+                "${(pi * (a + b)) / 2}",
+                style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
               )
             ],
           ),

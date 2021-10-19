@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:geomath/numberField.dart';
 
 class TrapeziumCalcPage extends StatefulWidget {
   TrapeziumCalcPage({Key? key}) : super(key: key);
@@ -9,6 +9,10 @@ class TrapeziumCalcPage extends StatefulWidget {
 }
 
 class _TrapeziumCalcPage extends State<TrapeziumCalcPage> {
+  num a = 0;
+  num b = 0;
+  num c = 0;
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -17,27 +21,35 @@ class _TrapeziumCalcPage extends State<TrapeziumCalcPage> {
         children: [
           Column(
             children: [
-              TextField(
-                decoration: new InputDecoration(labelText: "a"),
-                keyboardType: TextInputType.number,
-                inputFormatters: <TextInputFormatter>[
-                  FilteringTextInputFormatter.digitsOnly
-                ],
+              NumberField(
+                  labelText: "a",
+                  onChanged: (value) => {
+                        setState(() {
+                          a = double.parse(value);
+                        })
+                      }),
+              NumberField(
+                  labelText: "b",
+                  onChanged: (value) => {
+                        setState(() {
+                          b = double.parse(value);
+                        })
+                      }),
+              NumberField(
+                  labelText: "c",
+                  onChanged: (value) => {
+                        setState(() {
+                          c = double.parse(value);
+                        })
+                      }),
+              Text(
+                "พื้นที่",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
               ),
-              TextField(
-                decoration: new InputDecoration(labelText: "b"),
-                keyboardType: TextInputType.number,
-                inputFormatters: <TextInputFormatter>[
-                  FilteringTextInputFormatter.digitsOnly
-                ],
+              Text(
+                "${0.5 * a * (b + c)}",
+                style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
               ),
-              TextField(
-                decoration: new InputDecoration(labelText: "c"),
-                keyboardType: TextInputType.number,
-                inputFormatters: <TextInputFormatter>[
-                  FilteringTextInputFormatter.digitsOnly
-                ],
-              )
             ],
           )
         ],

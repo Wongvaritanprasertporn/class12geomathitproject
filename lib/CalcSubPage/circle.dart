@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:geomath/numberField.dart';
+import 'dart:math';
 
 class CircleCalcPage extends StatefulWidget {
   CircleCalcPage({Key? key}) : super(key: key);
@@ -9,6 +10,8 @@ class CircleCalcPage extends StatefulWidget {
 }
 
 class _CircleCalcPage extends State<CircleCalcPage> {
+  num r = 0;
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -17,14 +20,30 @@ class _CircleCalcPage extends State<CircleCalcPage> {
         children: [
           Column(
             children: [
-              TextField(
-                decoration: new InputDecoration(labelText: "r"),
-                keyboardType: TextInputType.number,
-                inputFormatters: <TextInputFormatter>[
-                  FilteringTextInputFormatter.digitsOnly
-                ],
-              ),
+              NumberField(
+                  labelText: "r (Radius)",
+                  onChanged: (value) => {
+                        setState(() {
+                          r = double.parse(value);
+                        })
+                      })
             ],
+          ),
+          Text(
+            "พื้นที่",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+          ),
+          Text(
+            "${pi * pow(r, 2)}",
+            style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
+          ),
+          Text(
+            "เส้นรอบรูป",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+          ),
+          Text(
+            "${2 * pi * r}",
+            style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
           )
         ],
       ),

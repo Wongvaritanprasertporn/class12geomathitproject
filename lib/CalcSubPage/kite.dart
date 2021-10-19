@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:geomath/numberField.dart';
 
 enum KiteAreaFormula { fromCD, fromAB }
 
@@ -60,39 +60,91 @@ class _KiteCalcPage extends State<KiteCalcPage> {
   getData() {
     switch (_kiteAreaFormula) {
       case KiteAreaFormula.fromCD:
-        return Column(children: [
-          TextField(
-              decoration: new InputDecoration(labelText: "c"),
-              keyboardType: TextInputType.number,
-              inputFormatters: <TextInputFormatter>[
-                FilteringTextInputFormatter.digitsOnly
-              ]),
-          TextField(
-            decoration: new InputDecoration(labelText: "d"),
-            keyboardType: TextInputType.number,
-            inputFormatters: <TextInputFormatter>[
-              FilteringTextInputFormatter.digitsOnly
-            ],
-          )
-        ]);
+        return CalcPageFromCD();
       case KiteAreaFormula.fromAB:
-        return Column(children: [
-          TextField(
-              decoration: new InputDecoration(labelText: "a"),
-              keyboardType: TextInputType.number,
-              inputFormatters: <TextInputFormatter>[
-                FilteringTextInputFormatter.digitsOnly
-              ]),
-          TextField(
-            decoration: new InputDecoration(labelText: "b"),
-            keyboardType: TextInputType.number,
-            inputFormatters: <TextInputFormatter>[
-              FilteringTextInputFormatter.digitsOnly
-            ],
-          )
-        ]);
+        return CalcPageFromAB();
       default:
         print("Invalid");
     }
+  }
+}
+
+class CalcPageFromCD extends StatefulWidget {
+  CalcPageFromCD({Key? key}) : super(key: key);
+
+  @override
+  _CalcPageFromCD createState() => _CalcPageFromCD();
+}
+
+class _CalcPageFromCD extends State<CalcPageFromCD> {
+  num c = 0;
+  num d = 0;
+
+  Widget build(BuildContext context) {
+    return Column(children: [
+      NumberField(
+        labelText: "c",
+        onChanged: (value) => {
+          setState(() {
+            c = double.parse(value);
+          })
+        },
+      ),
+      NumberField(
+          labelText: "d",
+          onChanged: (value) => {
+                setState(() {
+                  d = double.parse(value);
+                })
+              }),
+      Text(
+        "พื้นที่",
+        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+      ),
+      Text(
+        "${0.5 * c * d}",
+        style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
+      ),
+    ]);
+  }
+}
+
+class CalcPageFromAB extends StatefulWidget {
+  CalcPageFromAB({Key? key}) : super(key: key);
+
+  @override
+  _CalcPageFromAB createState() => _CalcPageFromAB();
+}
+
+class _CalcPageFromAB extends State<CalcPageFromAB> {
+  num a = 0;
+  num b = 0;
+
+  Widget build(BuildContext context) {
+    return Column(children: [
+      NumberField(
+          labelText: "a",
+          onChanged: (value) => {
+                setState(() {
+                  a = double.parse(value);
+                })
+              }),
+      NumberField(
+        labelText: "b",
+        onChanged: (value) => {
+          setState(() {
+            b = double.parse(value);
+          })
+        },
+      ),
+      Text(
+        "เส้นรอบรูป",
+        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+      ),
+      Text(
+        "${2 * (a + b)}",
+        style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
+      )
+    ]);
   }
 }
