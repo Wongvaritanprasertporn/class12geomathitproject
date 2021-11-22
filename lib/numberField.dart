@@ -2,23 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class NumberField extends StatefulWidget {
-  NumberField({Key? key, required this.labelText, this.onChanged})
+  NumberField(
+      {Key? key, required this.labelText, this.onChanged, this.controller})
       : super(key: key);
 
   final String labelText;
   final onChanged;
+  final controller;
 
   @override
-  _NumberField createState() =>
-      new _NumberField(labelText: this.labelText, onChanged: this.onChanged);
+  _NumberField createState() => new _NumberField(
+      labelText: this.labelText,
+      onChanged: this.onChanged,
+      controller: this.controller);
 }
 
 class _NumberField extends State<NumberField> {
-  _NumberField({required this.labelText, this.onChanged});
+  _NumberField({required this.labelText, this.onChanged, this.controller});
   var value = TextEditingController();
 
   final labelText;
   final onChanged;
+  final controller;
 
   @override
   void initState() {
