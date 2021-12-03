@@ -1,3 +1,4 @@
+import 'package:geomath/numberFieldController.dart';
 import 'package:flutter/material.dart';
 import 'package:geomath/numberField.dart';
 import 'dart:math';
@@ -14,6 +15,9 @@ class SquareCalcPage extends StatefulWidget {
 class _SquareCalcPage extends State<SquareCalcPage> {
   SquareAreaFormula? _squareAreaFormula = SquareAreaFormula.fromA;
 
+  var valueA = NumberFieldController();
+  var valueB = NumberFieldController();
+
   bool showBottomMenu = true;
   final GlobalKey _widgetKey = GlobalKey();
   final GlobalKey _animatedPos = GlobalKey();
@@ -21,31 +25,51 @@ class _SquareCalcPage extends State<SquareCalcPage> {
 
   var threshold = 100;
 
+  bool isFromAVisible = true;
+  bool isFromBVisible = false;
+
   @override
   void dispose() {
     super.dispose();
   }
 
-  getData() {
-    switch (_squareAreaFormula) {
-      case SquareAreaFormula.fromA:
-        return CalcPageFromA();
-      case SquareAreaFormula.fromB:
-        return CalcPageFromB();
-      default:
-        print("Unknown square area formula");
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
+    double bottomConfig = (showBottomMenu) ? 0 : -(_size!.height - 30);
     WidgetsBinding.instance!
         .addPostFrameCallback((_) => {_size = _widgetKey.currentContext?.size});
-    double bottomConfig = (showBottomMenu) ? 0 : -(_size!.height - 30);
+
+    num area = 0.0;
+    num peri = 0.0;
+
+    calculate() {
+      /*if (_squareAreaFormula == SquareAreaFormula.fromA) {
+        setState(() {
+          area = pow(valueA.number, 2);
+          peri = valueA.number * 4;
+          valueB.number = sqrt(pow(valueA.number, 2) * 2);
+        });
+      } else if (_squareAreaFormula == SquareAreaFormula.fromB) {
+        setState(() {
+          area = 0.5 * pow(valueB.number, 2);
+          peri = sqrt(0.5 * pow(valueB.number, 2)) * 4;
+          valueA.number = sqrt(pow(valueB.number, 2) / 2);
+        });
+      }*/
+      print("wow");
+    }
 
     return Container(
       child: Stack(children: [
+        Container(
+          color: Colors.white,
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          child: CustomPaint(
+            painter: GraphicsVisual(),
+          ),
+        ),
         AnimatedPositioned(
           key: _animatedPos,
           curve: Curves.easeInOut,
@@ -69,6 +93,7 @@ class _SquareCalcPage extends State<SquareCalcPage> {
             child: Container(
               key: _widgetKey,
               decoration: BoxDecoration(
+                color: Colors.white,
                 border: Border.all(color: Colors.black38),
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20),
@@ -98,6 +123,8 @@ class _SquareCalcPage extends State<SquareCalcPage> {
                                   onChanged: (SquareAreaFormula? value) {
                                     setState(() {
                                       _squareAreaFormula = value;
+                                      isFromAVisible = true;
+                                      isFromBVisible = false;
                                     });
                                   },
                                 ),
@@ -111,13 +138,74 @@ class _SquareCalcPage extends State<SquareCalcPage> {
                                   onChanged: (SquareAreaFormula? value) {
                                     setState(() {
                                       _squareAreaFormula = value;
+                                      isFromAVisible = false;
+                                      isFromBVisible = true;
                                     });
                                   },
                                 ),
                               ),
                             ],
                           ),
-                          Container(child: getData())
+                          Stack(
+                            children: [
+                              Visibility(
+                                  visible: isFromAVisible,
+                                  child: Positioned(
+                                      child: Column(
+                                    children: [
+                                      NumberField(
+                                        labelText: "a",
+                                        onChanged: calculate,
+                                        controller: valueA,
+                                      ),
+                                    ],
+                                  ))),
+                              Visibility(
+                                  visible: isFromBVisible,
+                                  child: Positioned(
+                                    child: Column(
+                                      children: [
+                                        NumberField(
+                                          labelText: "b",
+                                          onChanged: calculate,
+                                          controller: valueB,
+                                        ),
+                                      ],
+                                    ),
+                                  )),
+                            ],
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 10.0),
+                            child: Column(
+                              children: [
+                                Text(
+                                  "พื้นที่",
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                                Text(
+                                  "$area",
+                                  style: TextStyle(
+                                      fontSize: 26,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  "เส้นรอบรูป",
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                                Text(
+                                  "$peri",
+                                  style: TextStyle(
+                                      fontSize: 26,
+                                      fontWeight: FontWeight.bold),
+                                )
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -132,91 +220,25 @@ class _SquareCalcPage extends State<SquareCalcPage> {
   }
 }
 
-class CalcPageFromA extends StatefulWidget {
-  CalcPageFromA({Key? key}) : super(key: key);
-
+class GraphicsVisual extends CustomPainter {
   @override
-  _CalcPageFromA createState() => _CalcPageFromA();
-}
+  void paint(Canvas canvas, Size size) {
+    final paint = new Paint()
+      ..color = Colors.blue
+      ..strokeWidth = 5
+      ..style = PaintingStyle.stroke;
 
-class _CalcPageFromA extends State<CalcPageFromA> {
-  num numberFieldValA = 0;
+    final recSize = size.width * 0.7;
 
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        NumberField(
-          labelText: "a",
-          onChanged: (value) => {
-            setState(() {
-              numberFieldValA = double.parse(value);
-            })
-          },
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 10.0),
-          child: Column(
-            children: [
-              Text(
-                "พื้นที่",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-              ),
-              Text(
-                "${pow(numberFieldValA, 2)}",
-                style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
-              ),
-              Text(
-                "เส้นรอบรูป",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-              ),
-              Text(
-                "${numberFieldValA * 4}",
-                style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
-              )
-            ],
-          ),
-        ),
-      ],
-    );
+    final rect = Rect.fromLTWH((size.width - recSize) / 2,
+        (size.height - recSize) / 2, recSize, recSize);
+
+    canvas.drawRect(rect, paint);
   }
-}
-
-class CalcPageFromB extends StatefulWidget {
-  CalcPageFromB({Key? key}) : super(key: key);
 
   @override
-  _CalcPageFromB createState() => _CalcPageFromB();
-}
-
-class _CalcPageFromB extends State<CalcPageFromB> {
-  num numberFieldValB = 0;
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        NumberField(
-          labelText: "b",
-          onChanged: (value) => {
-            setState(() {
-              numberFieldValB = double.parse(value);
-            })
-          },
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 10.0),
-          child: Column(
-            children: [
-              Text(
-                "พื้นที่",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-              ),
-              Text(
-                "${0.5 * pow(numberFieldValB, 2)}",
-                style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
-              )
-            ],
-          ),
-        ),
-      ],
-    );
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    // TODO: implement shouldRepaint
+    return false;
   }
 }

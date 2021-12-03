@@ -23,7 +23,15 @@ class _NumberField extends State<NumberField> {
 
   final labelText;
   final onChanged;
-  final controller;
+  var controller;
+
+  double get number {
+    return double.parse(value.text);
+  }
+
+  set number(double setNumber) {
+    value.text = setNumber.toString();
+  }
 
   @override
   void initState() {
