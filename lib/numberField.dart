@@ -19,50 +19,38 @@ class NumberField extends StatefulWidget {
 
 class _NumberField extends State<NumberField> {
   _NumberField({required this.labelText, this.onChanged, this.controller});
-  var value = TextEditingController();
 
   final labelText;
   final onChanged;
   var controller;
 
-  double get number {
-    return double.parse(value.text);
-  }
-
-  set number(double setNumber) {
-    value.text = setNumber.toString();
-  }
-
   @override
   void initState() {
     super.initState();
     // Start listening to changes.
-    value.addListener(_changeARes);
+    controller.addListener(_changeARes);
   }
 
   @override
   void dispose() {
     // Clean up the controller when the widget is removed from the widget tree.
-    value.dispose();
     super.dispose();
   }
 
   void _changeARes() {
-    if (value.text == "") {
-      setState(() {
-        value.text = "0";
-      });
-    } else if (value.text[0] == "0" && value.text.length > 1) {
-      setState(() {
-        value.text = value.text.substring(1, value.text.length);
-      });
+    var txt = controller.text;
+    if (txt.length > 1) {
+      if (txt[0] == "0" && txt.length > 1 && txt[1] != ".") {
+        controller.text = txt.substring(1);
+      } else if (txt[0] == "-" &&
+          txt[1] == "0" &&
+          txt[2] != "." &&
+          txt.length > 2) {
+        controller.text = txt.substring(txt.length - 1);
+      }
     }
-    //Check if textfield has an dot
-    if (".".allMatches(value.text).length == 2) {
-      value.text = value.text.substring(0, value.text.length - 1);
-    }
-    value.selection =
-        TextSelection.fromPosition(TextPosition(offset: value.text.length));
+    controller.selection = TextSelection.fromPosition(
+        TextPosition(offset: controller.text.length));
   }
 
   @override
@@ -71,10 +59,10 @@ class _NumberField extends State<NumberField> {
       decoration: new InputDecoration(labelText: labelText),
       keyboardType: TextInputType.number,
       inputFormatters: <TextInputFormatter>[
-        FilteringTextInputFormatter.allow(RegExp('[0-9.]'))
+        FilteringTextInputFormatter.allow(RegExp('^-?[0-9,]*\\.?[0-9,]*\$/gm')),
       ],
       onChanged: onChanged,
-      controller: value,
+      controller: controller,
     );
   }
 }

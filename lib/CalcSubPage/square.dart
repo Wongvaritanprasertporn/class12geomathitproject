@@ -1,4 +1,3 @@
-import 'package:geomath/numberFieldController.dart';
 import 'package:flutter/material.dart';
 import 'package:geomath/numberField.dart';
 import 'dart:math';
@@ -15,15 +14,21 @@ class SquareCalcPage extends StatefulWidget {
 class _SquareCalcPage extends State<SquareCalcPage> {
   SquareAreaFormula? _squareAreaFormula = SquareAreaFormula.fromA;
 
-  var valueA = NumberFieldController();
-  var valueB = NumberFieldController();
+  String tempValAField = "";
+  String tempValBField = "";
+
+  var valueA = TextEditingController();
+  var valueB = TextEditingController();
+
+  num area = 0.0;
+  num peri = 0.0;
+
+  Size? _size;
+  var threshold = 100;
 
   bool showBottomMenu = true;
   final GlobalKey _widgetKey = GlobalKey();
   final GlobalKey _animatedPos = GlobalKey();
-  Size? _size;
-
-  var threshold = 100;
 
   bool isFromAVisible = true;
   bool isFromBVisible = false;
@@ -40,24 +45,26 @@ class _SquareCalcPage extends State<SquareCalcPage> {
     WidgetsBinding.instance!
         .addPostFrameCallback((_) => {_size = _widgetKey.currentContext?.size});
 
-    num area = 0.0;
-    num peri = 0.0;
+    calculateFromA(string) {
+        var gettedNumber = double.parse(string);
+        setState(() {
+          area = pow(gettedNumber, 2);
+          peri = gettedNumber * 4;
+          tempValBField = sqrt(pow(gettedNumber, 2) * 2).toString();
+          print("area = $area; peri = $peri; valueB = ${valueB.text}");
+        });
+    }
 
-    calculate() {
-      /*if (_squareAreaFormula == SquareAreaFormula.fromA) {
+    calculateFromB(string) {
+      if (string != null) {
+        var gettedNumber = double.parse(string);
         setState(() {
-          area = pow(valueA.number, 2);
-          peri = valueA.number * 4;
-          valueB.number = sqrt(pow(valueA.number, 2) * 2);
+          area = 0.5 * pow(gettedNumber, 2);
+          peri = sqrt(0.5 * pow(gettedNumber, 2)) * 4;
+          tempValAField = sqrt(pow(gettedNumber, 2) / 2).toString();
+          print("area = $area; peri = $peri; valueA = ${valueA.text}");
         });
-      } else if (_squareAreaFormula == SquareAreaFormula.fromB) {
-        setState(() {
-          area = 0.5 * pow(valueB.number, 2);
-          peri = sqrt(0.5 * pow(valueB.number, 2)) * 4;
-          valueA.number = sqrt(pow(valueB.number, 2) / 2);
-        });
-      }*/
-      print("wow");
+      }
     }
 
     return Container(
@@ -125,6 +132,7 @@ class _SquareCalcPage extends State<SquareCalcPage> {
                                       _squareAreaFormula = value;
                                       isFromAVisible = true;
                                       isFromBVisible = false;
+                                      valueA.text = tempValAField;
                                     });
                                   },
                                 ),
@@ -140,6 +148,7 @@ class _SquareCalcPage extends State<SquareCalcPage> {
                                       _squareAreaFormula = value;
                                       isFromAVisible = false;
                                       isFromBVisible = true;
+                                      valueB.text = tempValBField;
                                     });
                                   },
                                 ),
@@ -155,7 +164,7 @@ class _SquareCalcPage extends State<SquareCalcPage> {
                                     children: [
                                       NumberField(
                                         labelText: "a",
-                                        onChanged: calculate,
+                                        onChanged: calculateFromA,
                                         controller: valueA,
                                       ),
                                     ],
@@ -167,7 +176,7 @@ class _SquareCalcPage extends State<SquareCalcPage> {
                                       children: [
                                         NumberField(
                                           labelText: "b",
-                                          onChanged: calculate,
+                                          onChanged: calculateFromB,
                                           controller: valueB,
                                         ),
                                       ],
