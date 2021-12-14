@@ -9,14 +9,27 @@ class RectangleCalcPage extends StatefulWidget {
 }
 
 class _RectangleCalcPage extends State<RectangleCalcPage> {
-  num numberFieldValA = 0;
-  num numberFieldValB = 0;
   bool showBottomMenu = true;
+
+  var valueA = TextEditingController();
+  var valueB = TextEditingController();
+
+  double area = 0;
+  double peri = 0;
+
   final GlobalKey _widgetKey = GlobalKey();
   final GlobalKey _animatedPos = GlobalKey();
+
   Size? _size;
 
   var threshold = 100;
+
+  @override
+  void dispose() {
+    valueA.dispose();
+    valueB.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +37,15 @@ class _RectangleCalcPage extends State<RectangleCalcPage> {
     WidgetsBinding.instance!
         .addPostFrameCallback((_) => {_size = _widgetKey.currentContext?.size});
     double bottomConfig = (showBottomMenu) ? 0 : -(_size!.height - 30);
+
+    void calculate(String string) {
+      double a = double.tryParse(valueA.text) ?? 0;
+      double b = double.tryParse(valueB.text) ?? 0;
+      setState(() {
+        area = a * b;
+        peri = 2 * (a + b);
+      });
+    }
 
     return Container(
       child: Stack(children: [
@@ -76,21 +98,15 @@ class _RectangleCalcPage extends State<RectangleCalcPage> {
                               Column(
                                 children: [
                                   NumberField(
-                                      labelText: "a",
-                                      onChanged: (value) => {
-                                            setState(() {
-                                              numberFieldValA =
-                                                  double.parse(value);
-                                            })
-                                          }),
+                                    labelText: "a",
+                                    onChanged: calculate,
+                                    controller: valueA,
+                                  ),
                                   NumberField(
-                                      labelText: "b",
-                                      onChanged: (value) => {
-                                            setState(() {
-                                              numberFieldValB =
-                                                  double.parse(value);
-                                            })
-                                          }),
+                                    labelText: "b",
+                                    onChanged: calculate,
+                                    controller: valueB,
+                                  ),
                                   SizedBox(height: 10),
                                   Text(
                                     "พื้นที่",
@@ -99,7 +115,7 @@ class _RectangleCalcPage extends State<RectangleCalcPage> {
                                         fontWeight: FontWeight.w500),
                                   ),
                                   Text(
-                                    "${numberFieldValA * numberFieldValB}",
+                                    "$area",
                                     style: TextStyle(
                                         fontSize: 26,
                                         fontWeight: FontWeight.bold),
@@ -111,7 +127,7 @@ class _RectangleCalcPage extends State<RectangleCalcPage> {
                                         fontWeight: FontWeight.w500),
                                   ),
                                   Text(
-                                    "${2 * (numberFieldValA + numberFieldValB)}",
+                                    "$peri",
                                     style: TextStyle(
                                         fontSize: 26,
                                         fontWeight: FontWeight.bold),

@@ -9,14 +9,16 @@ class TrapezoidCalcPage extends StatefulWidget {
 }
 
 class _TrapezoidCalcPage extends State<TrapezoidCalcPage> {
-  num a = 0;
-  num b = 0;
-  num h = 0;
+  var valueA = TextEditingController();
+  var valueB = TextEditingController();
+  var valueH = TextEditingController();
 
   bool showBottomMenu = true;
   final GlobalKey _widgetKey = GlobalKey();
   final GlobalKey _animatedPos = GlobalKey();
   Size? _size;
+
+  double area = 0;
 
   var threshold = 100;
 
@@ -26,6 +28,16 @@ class _TrapezoidCalcPage extends State<TrapezoidCalcPage> {
     WidgetsBinding.instance!
         .addPostFrameCallback((_) => {_size = _widgetKey.currentContext?.size});
     double bottomConfig = (showBottomMenu) ? 0 : -(_size!.height - 30);
+
+    calculate(String string) {
+      double a = double.tryParse(valueA.text) ?? 0;
+      double b = double.tryParse(valueB.text) ?? 0;
+      double h = double.tryParse(valueH.text) ?? 0;
+
+      setState(() {
+        area = 0.5 * h * (a + b);
+      });
+    }
 
     return Container(
       child: Stack(children: [
@@ -75,26 +87,20 @@ class _TrapezoidCalcPage extends State<TrapezoidCalcPage> {
                         children: [
                           Column(children: [
                             NumberField(
-                                labelText: "a",
-                                onChanged: (value) => {
-                                      setState(() {
-                                        a = double.parse(value);
-                                      })
-                                    }),
+                              labelText: "a",
+                              onChanged: calculate,
+                              controller: valueA,
+                            ),
                             NumberField(
-                                labelText: "b",
-                                onChanged: (value) => {
-                                      setState(() {
-                                        b = double.parse(value);
-                                      })
-                                    }),
+                              labelText: "b",
+                              onChanged: calculate,
+                              controller: valueB,
+                            ),
                             NumberField(
-                                labelText: "h (ความสูง)",
-                                onChanged: (value) => {
-                                      setState(() {
-                                        h = double.parse(value);
-                                      })
-                                    }),
+                              labelText: "h (ความสูง)",
+                              onChanged: calculate,
+                              controller: valueH,
+                            ),
                             SizedBox(height: 10),
                             Text(
                               "พื้นที่",
@@ -102,7 +108,7 @@ class _TrapezoidCalcPage extends State<TrapezoidCalcPage> {
                                   fontSize: 16, fontWeight: FontWeight.w500),
                             ),
                             Text(
-                              "${0.5 * h * (a + b)}",
+                              "$area}",
                               style: TextStyle(
                                   fontSize: 26, fontWeight: FontWeight.bold),
                             ),

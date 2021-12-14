@@ -10,12 +10,15 @@ class CircleCalcPage extends StatefulWidget {
 }
 
 class _CircleCalcPage extends State<CircleCalcPage> {
-  num r = 0;
+  var valueR = TextEditingController();
 
   bool showBottomMenu = true;
   final GlobalKey _widgetKey = GlobalKey();
   final GlobalKey _animatedPos = GlobalKey();
   Size? _size;
+
+  double area = 0;
+  double peri = 0;
 
   var threshold = 100;
 
@@ -25,6 +28,15 @@ class _CircleCalcPage extends State<CircleCalcPage> {
     WidgetsBinding.instance!
         .addPostFrameCallback((_) => {_size = _widgetKey.currentContext?.size});
     double bottomConfig = (showBottomMenu) ? 0 : -(_size!.height - 30);
+
+    calculate(String string) {
+      double r = double.tryParse(valueR.text) ?? 0;
+
+      setState(() {
+        area = pi * pow(r, 2);
+        peri = 2 * pi * r;
+      });
+    }
 
     return Container(
       child: Stack(children: [
@@ -76,11 +88,8 @@ class _CircleCalcPage extends State<CircleCalcPage> {
                             children: [
                               NumberField(
                                   labelText: "r (รัศมี)",
-                                  onChanged: (value) => {
-                                        setState(() {
-                                          r = double.parse(value);
-                                        })
-                                      })
+                                  onChanged: calculate,
+                                  controller: valueR),
                             ],
                           ),
                           SizedBox(height: 10),
@@ -90,7 +99,7 @@ class _CircleCalcPage extends State<CircleCalcPage> {
                                 fontSize: 16, fontWeight: FontWeight.w500),
                           ),
                           Text(
-                            "${pi * pow(r, 2)}",
+                            "$area",
                             style: TextStyle(
                                 fontSize: 26, fontWeight: FontWeight.bold),
                           ),
@@ -100,7 +109,7 @@ class _CircleCalcPage extends State<CircleCalcPage> {
                                 fontSize: 16, fontWeight: FontWeight.w500),
                           ),
                           Text(
-                            "${2 * pi * r}",
+                            "$peri",
                             style: TextStyle(
                                 fontSize: 26, fontWeight: FontWeight.bold),
                           )

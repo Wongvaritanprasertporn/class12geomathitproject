@@ -14,9 +14,6 @@ class SquareCalcPage extends StatefulWidget {
 class _SquareCalcPage extends State<SquareCalcPage> {
   SquareAreaFormula? _squareAreaFormula = SquareAreaFormula.fromA;
 
-  String tempValAField = "";
-  String tempValBField = "";
-
   var valueA = TextEditingController();
   var valueB = TextEditingController();
 
@@ -34,7 +31,14 @@ class _SquareCalcPage extends State<SquareCalcPage> {
   bool isFromBVisible = false;
 
   @override
+  initState() {
+    super.initState();
+  }
+
+  @override
   void dispose() {
+    valueA.dispose();
+    valueB.dispose();
     super.dispose();
   }
 
@@ -45,26 +49,24 @@ class _SquareCalcPage extends State<SquareCalcPage> {
     WidgetsBinding.instance!
         .addPostFrameCallback((_) => {_size = _widgetKey.currentContext?.size});
 
-    calculateFromA(string) {
-        var gettedNumber = double.parse(string);
-        setState(() {
-          area = pow(gettedNumber, 2);
-          peri = gettedNumber * 4;
-          tempValBField = sqrt(pow(gettedNumber, 2) * 2).toString();
-          print("area = $area; peri = $peri; valueB = ${valueB.text}");
-        });
+    calculateFromA(String string) {
+      var gettedNumber = double.tryParse(string) ?? 0;
+      setState(() {
+        area = pow(gettedNumber, 2);
+        peri = gettedNumber * 4;
+        valueB.text = sqrt(pow(gettedNumber, 2) * 2).toString();
+        print("area = $area; peri = $peri; valueB = ${valueB.text}");
+      });
     }
 
-    calculateFromB(string) {
-      if (string != null) {
-        var gettedNumber = double.parse(string);
-        setState(() {
-          area = 0.5 * pow(gettedNumber, 2);
-          peri = sqrt(0.5 * pow(gettedNumber, 2)) * 4;
-          tempValAField = sqrt(pow(gettedNumber, 2) / 2).toString();
-          print("area = $area; peri = $peri; valueA = ${valueA.text}");
-        });
-      }
+    calculateFromB(String string) {
+      var gettedNumber = double.tryParse(string) ?? 0;
+      setState(() {
+        area = 0.5 * pow(gettedNumber, 2);
+        peri = sqrt(0.5 * pow(gettedNumber, 2)) * 4;
+        valueA.text = sqrt(pow(gettedNumber, 2) / 2).toString();
+        print("area = $area; peri = $peri; valueA = ${valueA.text}");
+      });
     }
 
     return Container(
@@ -132,7 +134,6 @@ class _SquareCalcPage extends State<SquareCalcPage> {
                                       _squareAreaFormula = value;
                                       isFromAVisible = true;
                                       isFromBVisible = false;
-                                      valueA.text = tempValAField;
                                     });
                                   },
                                 ),
@@ -148,7 +149,6 @@ class _SquareCalcPage extends State<SquareCalcPage> {
                                       _squareAreaFormula = value;
                                       isFromAVisible = false;
                                       isFromBVisible = true;
-                                      valueB.text = tempValBField;
                                     });
                                   },
                                 ),
@@ -160,27 +160,23 @@ class _SquareCalcPage extends State<SquareCalcPage> {
                               Visibility(
                                   visible: isFromAVisible,
                                   child: Positioned(
-                                      child: Column(
-                                    children: [
+                                      child: 
                                       NumberField(
                                         labelText: "a",
                                         onChanged: calculateFromA,
                                         controller: valueA,
                                       ),
-                                    ],
-                                  ))),
+                                    )),
                               Visibility(
                                   visible: isFromBVisible,
                                   child: Positioned(
-                                    child: Column(
-                                      children: [
+                                    child: 
                                         NumberField(
                                           labelText: "b",
                                           onChanged: calculateFromB,
                                           controller: valueB,
                                         ),
-                                      ],
-                                    ),
+                                    
                                   )),
                             ],
                           ),

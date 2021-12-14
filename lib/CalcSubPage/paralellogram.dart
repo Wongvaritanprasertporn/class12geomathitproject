@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:geomath/numberField.dart';
 
-enum ParalellogramFormula { area, peri }
-
 class ParaCalcPage extends StatefulWidget {
   ParaCalcPage({Key? key}) : super(key: key);
 
@@ -11,24 +9,34 @@ class ParaCalcPage extends StatefulWidget {
 }
 
 class _ParaCalcPage extends State<ParaCalcPage> {
-  ParalellogramFormula? _paralellogramFormula = ParalellogramFormula.area;
+  var valueA = TextEditingController();
+  var valueB = TextEditingController();
+  var valueH = TextEditingController();
 
   bool showBottomMenu = true;
   final GlobalKey _widgetKey = GlobalKey();
   final GlobalKey _animatedPos = GlobalKey();
   Size? _size;
 
+  bool isFromAreaVisible = true;
+  bool isFromPeriVisible = false;
+
+  num area = 0;
+  num peri = 0;
+
   var threshold = 100;
 
-  getData() {
-    switch (_paralellogramFormula) {
-      case ParalellogramFormula.area:
-        return CalcPageArea();
-      case ParalellogramFormula.peri:
-        return CalcPagePeri();
-      default:
-        print("Something went wrong.");
-    }
+  @override
+  initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    valueA.dispose();
+    valueB.dispose();
+    valueH.dispose();
+    super.dispose();
   }
 
   @override
@@ -37,6 +45,22 @@ class _ParaCalcPage extends State<ParaCalcPage> {
     WidgetsBinding.instance!
         .addPostFrameCallback((_) => {_size = _widgetKey.currentContext?.size});
     double bottomConfig = (showBottomMenu) ? 0 : -(_size!.height - 30);
+
+    calculate(String string) {
+      double a = double.tryParse(valueA.text) ?? 0;
+      double b = double.tryParse(valueB.text) ?? 0;
+      double h = double.tryParse(valueH.text) ?? 0;
+
+      if (a != 0 && b != 0 && h != 0) {
+        setState(() {
+          area = b * h;
+          peri = 2 * (a + b);
+        });
+      } else {
+        area = 0;
+        peri = 0;
+      }
+    }
 
     return Container(
       child: Stack(children: [
@@ -82,39 +106,53 @@ class _ParaCalcPage extends State<ParaCalcPage> {
                     ),
                     Padding(
                         padding: const EdgeInsets.all(10.0),
-                        child: Column(
-                          children: [
-                            Column(
-                              children: [
-                                ListTile(
-                                    title:
-                                        const Text("เมื่อต้องการทราบพื้นที่"),
-                                    leading: Radio<ParalellogramFormula>(
-                                      value: ParalellogramFormula.area,
-                                      groupValue: _paralellogramFormula,
-                                      onChanged: (ParalellogramFormula? value) {
-                                        setState(() {
-                                          _paralellogramFormula = value;
-                                        });
-                                      },
-                                    )),
-                                ListTile(
-                                    title: const Text(
-                                        "เมื่อต้องการทราบความยาวเส้นรอบรูป"),
-                                    leading: Radio<ParalellogramFormula>(
-                                      value: ParalellogramFormula.peri,
-                                      groupValue: _paralellogramFormula,
-                                      onChanged: (ParalellogramFormula? value) {
-                                        setState(() {
-                                          _paralellogramFormula = value;
-                                        });
-                                      },
-                                    )),
-                              ],
-                            ),
-                            getData(),
-                          ],
-                        )),
+                        child: Column(children: [
+                          Padding(
+                              padding: const EdgeInsets.only(top: 10.0),
+                              child: Column(
+                                children: [
+                                  NumberField(
+                                    labelText: "a",
+                                    onChanged: calculate,
+                                    controller: valueA,
+                                  ),
+                                  NumberField(
+                                    labelText: "b",
+                                    onChanged: calculate,
+                                    controller: valueB,
+                                  ),
+                                  NumberField(
+                                    labelText: "h",
+                                    onChanged: calculate,
+                                    controller: valueH,
+                                  ),
+                                  Text(
+                                    "พื้นที่",
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                  Text(
+                                    "$area",
+                                    style: TextStyle(
+                                        fontSize: 26,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  Text(
+                                    "เส้นรอบรูป",
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                  Text(
+                                    "$peri",
+                                    style: TextStyle(
+                                        fontSize: 26,
+                                        fontWeight: FontWeight.bold),
+                                  )
+                                ],
+                              )),
+                        ])),
                   ],
                 ),
               ),
@@ -122,96 +160,6 @@ class _ParaCalcPage extends State<ParaCalcPage> {
           ),
         ),
       ]),
-    );
-  }
-}
-
-class CalcPageArea extends StatefulWidget {
-  CalcPageArea({Key? key}) : super(key: key);
-
-  @override
-  _CalcPageArea createState() => _CalcPageArea();
-}
-
-class _CalcPageArea extends State<CalcPageArea> {
-  num b = 0;
-  num h = 0;
-
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        NumberField(
-            labelText: "b",
-            onChanged: (value) => {
-                  setState(() {
-                    b = double.parse(value);
-                  })
-                }),
-        NumberField(
-          labelText: "h",
-          onChanged: (value) => {
-            setState(() {
-              h = double.parse(value);
-            })
-          },
-        ),
-        SizedBox(
-          height: 10,
-        ),
-        Text(
-          "พื้นที่",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-        ),
-        Text(
-          "${b * h}",
-          style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
-        )
-      ],
-    );
-  }
-}
-
-class CalcPagePeri extends StatefulWidget {
-  CalcPagePeri({Key? key}) : super(key: key);
-
-  @override
-  _CalcPagePeri createState() => _CalcPagePeri();
-}
-
-class _CalcPagePeri extends State<CalcPagePeri> {
-  num a = 0;
-  num b = 0;
-
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        NumberField(
-            labelText: "a",
-            onChanged: (value) => {
-                  setState(() {
-                    a = double.parse(value);
-                  })
-                }),
-        NumberField(
-          labelText: "b",
-          onChanged: (value) => {
-            setState(() {
-              b = double.parse(value);
-            })
-          },
-        ),
-        SizedBox(
-          height: 10,
-        ),
-        Text(
-          "เส้นรอบรูป",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-        ),
-        Text(
-          "${2 * (a + b)}",
-          style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
-        )
-      ],
     );
   }
 }

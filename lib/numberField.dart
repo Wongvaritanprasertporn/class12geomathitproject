@@ -28,7 +28,9 @@ class _NumberField extends State<NumberField> {
   void initState() {
     super.initState();
     // Start listening to changes.
-    controller.addListener(_changeARes);
+    if (controller != null) {
+      controller.addListener(_changeARes);
+    }
   }
 
   @override
@@ -59,7 +61,7 @@ class _NumberField extends State<NumberField> {
       decoration: new InputDecoration(labelText: labelText),
       keyboardType: TextInputType.number,
       inputFormatters: <TextInputFormatter>[
-        FilteringTextInputFormatter.allow(RegExp('^-?[0-9,]*\\.?[0-9,]*\$/gm')),
+        FilteringTextInputFormatter.allow(RegExp('^-?[0-9,]*\\.?[0-9,]*\$')),
       ],
       onChanged: onChanged,
       controller: controller,

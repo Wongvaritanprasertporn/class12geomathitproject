@@ -9,14 +9,16 @@ class TrapeziumCalcPage extends StatefulWidget {
 }
 
 class _TrapeziumCalcPage extends State<TrapeziumCalcPage> {
-  num a = 0;
-  num b = 0;
-  num c = 0;
+  var valueA = TextEditingController();
+  var valueB = TextEditingController();
+  var valueC = TextEditingController();
 
   bool showBottomMenu = true;
   final GlobalKey _widgetKey = GlobalKey();
   final GlobalKey _animatedPos = GlobalKey();
   Size? _size;
+
+  double area = 0;
 
   var threshold = 100;
 
@@ -26,6 +28,16 @@ class _TrapeziumCalcPage extends State<TrapeziumCalcPage> {
     WidgetsBinding.instance!
         .addPostFrameCallback((_) => {_size = _widgetKey.currentContext?.size});
     double bottomConfig = (showBottomMenu) ? 0 : -(_size!.height - 30);
+
+    calculate(String string) {
+      double a = double.tryParse(valueA.text) ?? 0;
+      double b = double.tryParse(valueB.text) ?? 0;
+      double c = double.tryParse(valueC.text) ?? 0;
+
+      setState(() {
+        area = 0.5 * a * (b + c);
+      });
+    }
 
     return Container(
       child: Stack(children: [
@@ -77,25 +89,16 @@ class _TrapeziumCalcPage extends State<TrapeziumCalcPage> {
                             children: [
                               NumberField(
                                   labelText: "a",
-                                  onChanged: (value) => {
-                                        setState(() {
-                                          a = double.parse(value);
-                                        })
-                                      }),
+                                  onChanged: calculate,
+                                  controller: valueA,),
                               NumberField(
                                   labelText: "b",
-                                  onChanged: (value) => {
-                                        setState(() {
-                                          b = double.parse(value);
-                                        })
-                                      }),
+                                  onChanged: calculate,
+                                  controller: valueB,),
                               NumberField(
                                   labelText: "c",
-                                  onChanged: (value) => {
-                                        setState(() {
-                                          c = double.parse(value);
-                                        })
-                                      }),
+                                  onChanged: calculate,
+                                  controller: valueC,),
                               SizedBox(height: 10),
                               Text(
                                 "พื้นที่",
@@ -103,7 +106,7 @@ class _TrapeziumCalcPage extends State<TrapeziumCalcPage> {
                                     fontSize: 16, fontWeight: FontWeight.w500),
                               ),
                               Text(
-                                "${0.5 * a * (b + c)}",
+                                "$area",
                                 style: TextStyle(
                                     fontSize: 26, fontWeight: FontWeight.bold),
                               ),

@@ -14,22 +14,38 @@ class TriangleCalcPage extends StatefulWidget {
 class _TriangleCalcPage extends State<TriangleCalcPage> {
   TriangleAreaFormula? _triangleAreaFormula = TriangleAreaFormula.fromAH;
 
+  var valueA = TextEditingController();
+  var valueB = TextEditingController();
+  var valueC = TextEditingController();
+  var valueS = TextEditingController();
+  var valueH = TextEditingController();
+
+  num area = 0;
+  num peri = 0;
+
   bool showBottomMenu = true;
   final GlobalKey _widgetKey = GlobalKey();
   final GlobalKey _animatedPos = GlobalKey();
   Size? _size;
 
+  bool isFromAhVisible = true;
+  bool isFromAbcVisible = false;
+
   var threshold = 100;
 
-  getData() {
-    switch (_triangleAreaFormula) {
-      case TriangleAreaFormula.fromAH:
-        return CalcPageFromAH();
-      case TriangleAreaFormula.fromSide:
-        return CalcPageFromSide();
-      default:
-        print("invalid");
-    }
+  @override
+  initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    valueA.dispose();
+    valueB.dispose();
+    valueC.dispose();
+    valueS.dispose();
+    valueH.dispose();
+    super.dispose();
   }
 
   @override
@@ -38,6 +54,27 @@ class _TriangleCalcPage extends State<TriangleCalcPage> {
     WidgetsBinding.instance!
         .addPostFrameCallback((_) => {_size = _widgetKey.currentContext?.size});
     double bottomConfig = (showBottomMenu) ? 0 : -(_size!.height - 30);
+
+    calculateFromAh(String string) {
+      double a = double.tryParse(valueA.text) ?? 0;
+      double h = double.tryParse(valueH.text) ?? 0;
+
+      setState(() {
+        area = (a * h) / 2;
+      });
+    }
+
+    calculateFromAbc(String string) {
+      double a = double.tryParse(valueA.text) ?? 0;
+      double b = double.tryParse(valueB.text) ?? 0;
+      double c = double.tryParse(valueC.text) ?? 0;
+      double s = 0.5 * (a + b + c);
+
+      setState(() {
+        area = sqrt(s * (s - a) * (s - b) * (s - c));
+        peri = a + b + c;
+      });
+    }
 
     return Container(
       child: Stack(children: [
@@ -82,45 +119,126 @@ class _TriangleCalcPage extends State<TriangleCalcPage> {
                       size: 20,
                     ),
                     Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Column(
-                        children: [
-                          Column(
-                            children: [
-                              Column(children: <Widget>[
-                                ListTile(
-                                  title: const Text(
-                                      'เมื่อทราบความกว้างและความสูง'),
-                                  leading: Radio<TriangleAreaFormula>(
-                                    value: TriangleAreaFormula.fromAH,
-                                    groupValue: _triangleAreaFormula,
-                                    onChanged: (TriangleAreaFormula? value) {
-                                      setState(() {
-                                        _triangleAreaFormula = value;
-                                      });
-                                    },
+                        padding: const EdgeInsets.all(10.0),
+                        child: Column(
+                          children: [
+                            Column(
+                              children: [
+                                Column(children: <Widget>[
+                                  ListTile(
+                                    title: const Text(
+                                        'เมื่อทราบความกว้างและความสูง'),
+                                    leading: Radio<TriangleAreaFormula>(
+                                      value: TriangleAreaFormula.fromAH,
+                                      groupValue: _triangleAreaFormula,
+                                      onChanged: (TriangleAreaFormula? value) {
+                                        setState(() {
+                                          _triangleAreaFormula = value;
+                                          isFromAhVisible = true;
+                                          isFromAbcVisible = false;
+                                        });
+                                      },
+                                    ),
                                   ),
-                                ),
-                                ListTile(
-                                  title: const Text(
-                                      'เมื่อทราบความความยาวของด้านทั้งสาม'),
-                                  leading: Radio<TriangleAreaFormula>(
-                                    value: TriangleAreaFormula.fromSide,
-                                    groupValue: _triangleAreaFormula,
-                                    onChanged: (TriangleAreaFormula? value) {
-                                      setState(() {
-                                        _triangleAreaFormula = value;
-                                      });
-                                    },
+                                  ListTile(
+                                    title: const Text(
+                                        'เมื่อทราบความความยาวของด้านทั้งสาม'),
+                                    leading: Radio<TriangleAreaFormula>(
+                                      value: TriangleAreaFormula.fromSide,
+                                      groupValue: _triangleAreaFormula,
+                                      onChanged: (TriangleAreaFormula? value) {
+                                        setState(() {
+                                          _triangleAreaFormula = value;
+                                          isFromAhVisible = false;
+                                          isFromAbcVisible = true;
+                                        });
+                                      },
+                                    ),
                                   ),
-                                ),
-                              ]),
-                            ],
-                          ),
-                          getData(),
-                        ],
-                      ),
-                    ),
+                                ]),
+                              ],
+                            ),
+                            Stack(children: [
+                              Visibility(
+                                  visible: isFromAhVisible,
+                                  child: Positioned(
+                                      child: Column(
+                                    children: [
+                                      NumberField(
+                                        labelText: "a",
+                                        onChanged: calculateFromAh,
+                                        controller: valueA,
+                                      ),
+                                      NumberField(
+                                        labelText: "h (ความสูง)",
+                                        onChanged: calculateFromAh,
+                                        controller: valueH,
+                                      ),
+                                      SizedBox(height: 10),
+                                      Text(
+                                        "พื้นที่",
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500),
+                                      ),
+                                      Text(
+                                        "$area",
+                                        style: TextStyle(
+                                            fontSize: 26,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ],
+                                  ))),
+                              Visibility(
+                                  visible: isFromAbcVisible,
+                                  child: Positioned(
+                                      child: Column(
+                                    children: [
+                                      NumberField(
+                                        labelText: "a",
+                                        onChanged: calculateFromAbc,
+                                        controller: valueA,
+                                      ),
+                                      NumberField(
+                                        labelText: "b",
+                                        onChanged: calculateFromAbc,
+                                        controller: valueB,
+                                      ),
+                                      NumberField(
+                                        labelText: "c",
+                                        onChanged: calculateFromAbc,
+                                        controller: valueC,
+                                      ),
+                                      SizedBox(height: 10),
+                                      Text(
+                                        "พื้นที่",
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500),
+                                      ),
+                                      Text(
+                                        "$area",
+                                        style: TextStyle(
+                                            fontSize: 26,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      Text(
+                                        "เส้นรอบรูป",
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500),
+                                      ),
+                                      Text(
+                                        "$peri",
+                                        style: TextStyle(
+                                            fontSize: 26,
+                                            fontWeight: FontWeight.bold),
+                                      )
+                                    ],
+                                  )))
+                            ]),
+                          ],
+                        ))
                   ],
                 ),
               ),
@@ -128,110 +246,6 @@ class _TriangleCalcPage extends State<TriangleCalcPage> {
           ),
         ),
       ]),
-    );
-  }
-}
-
-class CalcPageFromAH extends StatefulWidget {
-  CalcPageFromAH({Key? key}) : super(key: key);
-
-  @override
-  _CalcPageFromAH createState() => _CalcPageFromAH();
-}
-
-class _CalcPageFromAH extends State<CalcPageFromAH> {
-  num a = 0;
-  num h = 0;
-
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        NumberField(
-            labelText: "a",
-            onChanged: (value) => {
-                  setState(() {
-                    a = double.parse(value);
-                  })
-                }),
-        NumberField(
-            labelText: "h (ความสูง)",
-            onChanged: (value) => {
-                  setState(() {
-                    h = double.parse(value);
-                  })
-                }),
-        SizedBox(height: 10),
-        Text(
-          "พื้นที่",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-        ),
-        Text(
-          "${(a * h) / 2}",
-          style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
-        ),
-      ],
-    );
-  }
-}
-
-class CalcPageFromSide extends StatefulWidget {
-  CalcPageFromSide({Key? key}) : super(key: key);
-
-  @override
-  _CalcPageFromSide createState() => _CalcPageFromSide();
-}
-
-class _CalcPageFromSide extends State<CalcPageFromSide> {
-  num a = 0;
-  num b = 0;
-  num c = 0;
-  num s = 0;
-
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        NumberField(
-            labelText: "a",
-            onChanged: (value) => {
-                  setState(() {
-                    a = double.parse(value);
-                    s = 0.5 * (a + b + c);
-                  })
-                }),
-        NumberField(
-            labelText: "b",
-            onChanged: (value) => {
-                  setState(() {
-                    b = double.parse(value);
-                    s = 0.5 * (a + b + c);
-                  })
-                }),
-        NumberField(
-            labelText: "c",
-            onChanged: (value) => {
-                  setState(() {
-                    c = double.parse(value);
-                    s = 0.5 * (a + b + c);
-                  })
-                }),
-        SizedBox(height: 10),
-        Text(
-          "พื้นที่",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-        ),
-        Text(
-          "${sqrt(s * (s - a) * (s - b) * (s - c))}",
-          style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
-        ),
-        Text(
-          "เส้นรอบรูป",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-        ),
-        Text(
-          "${a + b + c}",
-          style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
-        )
-      ],
     );
   }
 }

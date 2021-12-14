@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:geomath/numberField.dart';
 
@@ -13,22 +15,36 @@ class KiteCalcPage extends StatefulWidget {
 class _KiteCalcPage extends State<KiteCalcPage> {
   KiteAreaFormula? _kiteAreaFormula = KiteAreaFormula.fromCD;
 
+  var valueA = TextEditingController();
+  var valueB = TextEditingController();
+  var valueC = TextEditingController();
+  var valueD = TextEditingController();
+
   bool showBottomMenu = true;
   final GlobalKey _widgetKey = GlobalKey();
   final GlobalKey _animatedPos = GlobalKey();
   Size? _size;
 
+  double area = 0;
+  double peri = 0;
+
+  bool isFromCdVisible = true;
+  bool isFromAbVisible = false;
+
   var threshold = 100;
 
-  getData() {
-    switch (_kiteAreaFormula) {
-      case KiteAreaFormula.fromCD:
-        return CalcPageFromCD();
-      case KiteAreaFormula.fromAB:
-        return CalcPageFromAB();
-      default:
-        print("Invalid");
-    }
+  @override
+  initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    valueA.dispose();
+    valueB.dispose();
+    valueC.dispose();
+    valueD.dispose();
+    super.dispose();
   }
 
   @override
@@ -37,6 +53,36 @@ class _KiteCalcPage extends State<KiteCalcPage> {
     WidgetsBinding.instance!
         .addPostFrameCallback((_) => {_size = _widgetKey.currentContext?.size});
     double bottomConfig = (showBottomMenu) ? 0 : -(_size!.height - 30);
+
+    calculateFromCd(String string) {
+      double c = double.tryParse(valueC.text) ?? 0;
+      double d = double.tryParse(valueD.text) ?? 0;
+
+      if (c != 0 && d != 0) {
+        setState(() {
+          area = 0.5 * c * d;
+          valueA.text = sqrt(pow((c / 2), 2) + pow((c / 2), 2)).toString();
+          valueB.text =
+              sqrt(pow((c / 2), 2) + pow((d - (c / 2)), 2)).toString();
+        });
+      }
+    }
+
+    calculateFromAb() {
+      double a = double.tryParse(valueA.text) ?? 0;
+      double b = double.tryParse(valueB.text) ?? 0;
+      double c = 0;
+
+      c = a / sqrt(2);
+
+      if (a != 0 && b != 0) {
+        setState(() {
+          peri = 2 * (a + b);
+          valueC.text = c.toString();
+          valueD.text = (sqrt(pow(b, 2) - pow(c, 2)) + c).toString();
+        });
+      }
+    }
 
     return Container(
       child: Stack(children: [
@@ -81,9 +127,8 @@ class _KiteCalcPage extends State<KiteCalcPage> {
                       size: 20,
                     ),
                     Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Column(
-                        children: [
+                        padding: const EdgeInsets.all(10.0),
+                        child: Column(children: [
                           Column(
                             children: [
                               Column(
@@ -96,6 +141,8 @@ class _KiteCalcPage extends State<KiteCalcPage> {
                                       onChanged: (KiteAreaFormula? value) {
                                         setState(() {
                                           _kiteAreaFormula = value;
+                                          isFromCdVisible = true;
+                                          isFromAbVisible = false;
                                         });
                                       },
                                     ),
@@ -108,18 +155,77 @@ class _KiteCalcPage extends State<KiteCalcPage> {
                                       onChanged: (KiteAreaFormula? value) {
                                         setState(() {
                                           _kiteAreaFormula = value;
+                                          isFromCdVisible = false;
+                                          isFromAbVisible = true;
                                         });
                                       },
                                     ),
                                   ),
-                                  getData()
+                                ],
+                              ),
+                              Stack(
+                                children: [
+                                  Visibility(
+                                    visible: isFromCdVisible,
+                                      child: Positioned(
+                                          child: Column(
+                                    children: [
+                                      NumberField(
+                                        labelText: "c",
+                                        onChanged: calculateFromCd,
+                                        controller: valueC,
+                                      ),
+                                      NumberField(
+                                        labelText: "d",
+                                        onChanged: calculateFromCd,
+                                        controller: valueD,
+                                      ),
+                                      Text(
+                                        "พื้นที่",
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500),
+                                      ),
+                                      Text(
+                                        "", //"${0.5 * c * d}",
+                                        style: TextStyle(
+                                            fontSize: 26,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ],
+                                  ))),
+                                  Visibility(
+                                    visible: isFromAbVisible,
+                                      child: Positioned(
+                                          child: Column(children: [
+                                    NumberField(
+                                      labelText: "a",
+                                      onChanged: calculateFromAb,
+                                      controller: valueA,
+                                    ),
+                                    NumberField(
+                                      labelText: "b",
+                                      onChanged: calculateFromAb,
+                                      controller: valueB,
+                                    ),
+                                    Text(
+                                      "เส้นรอบรูป",
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                    Text(
+                                      "", //"${2 * (a + b)}",
+                                      style: TextStyle(
+                                          fontSize: 26,
+                                          fontWeight: FontWeight.bold),
+                                    )
+                                  ])))
                                 ],
                               ),
                             ],
-                          )
-                        ],
-                      ),
-                    ),
+                          ),
+                        ])),
                   ],
                 ),
               ),
@@ -128,87 +234,5 @@ class _KiteCalcPage extends State<KiteCalcPage> {
         ),
       ]),
     );
-  }
-}
-
-class CalcPageFromCD extends StatefulWidget {
-  CalcPageFromCD({Key? key}) : super(key: key);
-
-  @override
-  _CalcPageFromCD createState() => _CalcPageFromCD();
-}
-
-class _CalcPageFromCD extends State<CalcPageFromCD> {
-  num c = 0;
-  num d = 0;
-
-  Widget build(BuildContext context) {
-    return Column(children: [
-      NumberField(
-        labelText: "c",
-        onChanged: (value) => {
-          setState(() {
-            c = double.parse(value);
-          })
-        },
-      ),
-      NumberField(
-          labelText: "d",
-          onChanged: (value) => {
-                setState(() {
-                  d = double.parse(value);
-                })
-              }),
-      SizedBox(height: 10),
-      Text(
-        "พื้นที่",
-        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-      ),
-      Text(
-        "${0.5 * c * d}",
-        style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
-      ),
-    ]);
-  }
-}
-
-class CalcPageFromAB extends StatefulWidget {
-  CalcPageFromAB({Key? key}) : super(key: key);
-
-  @override
-  _CalcPageFromAB createState() => _CalcPageFromAB();
-}
-
-class _CalcPageFromAB extends State<CalcPageFromAB> {
-  num a = 0;
-  num b = 0;
-
-  Widget build(BuildContext context) {
-    return Column(children: [
-      NumberField(
-          labelText: "a",
-          onChanged: (value) => {
-                setState(() {
-                  a = double.parse(value);
-                })
-              }),
-      NumberField(
-        labelText: "b",
-        onChanged: (value) => {
-          setState(() {
-            b = double.parse(value);
-          })
-        },
-      ),
-      SizedBox(height: 10),
-      Text(
-        "เส้นรอบรูป",
-        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-      ),
-      Text(
-        "${2 * (a + b)}",
-        style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
-      )
-    ]);
   }
 }

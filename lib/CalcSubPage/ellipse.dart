@@ -10,13 +10,16 @@ class EllipseCalcPage extends StatefulWidget {
 }
 
 class _EllipseCalcPage extends State<EllipseCalcPage> {
-  num a = 0;
-  num b = 0;
+  var valueA = TextEditingController();
+  var valueB = TextEditingController();
 
   bool showBottomMenu = true;
   final GlobalKey _widgetKey = GlobalKey();
   final GlobalKey _animatedPos = GlobalKey();
   Size? _size;
+
+  double area = 0;
+  double peri = 0;
 
   var threshold = 100;
 
@@ -26,6 +29,16 @@ class _EllipseCalcPage extends State<EllipseCalcPage> {
     WidgetsBinding.instance!
         .addPostFrameCallback((_) => {_size = _widgetKey.currentContext?.size});
     double bottomConfig = (showBottomMenu) ? 0 : -(_size!.height - 30);
+
+    calculate(String string) {
+      double a = double.tryParse(valueA.text) ?? 0;
+      double b = double.tryParse(valueB.text) ?? 0;
+
+      setState(() {
+        area = (pi * a * b) / 4;
+        peri = (pi * (a + b)) / 2;
+      });
+    }
 
     return Container(
       child: Stack(children: [
@@ -75,19 +88,14 @@ class _EllipseCalcPage extends State<EllipseCalcPage> {
                         children: [
                           NumberField(
                             labelText: "a (รัศมีแนวยาว)",
-                            onChanged: (value) => {
-                              setState(() {
-                                a = double.parse(value);
-                              })
-                            },
+                            onChanged: calculate,
+                            controller: valueA,
                           ),
                           NumberField(
-                              labelText: "b (รัศมีแนวสั้น)",
-                              onChanged: (value) => {
-                                    setState(() {
-                                      b = double.parse(value);
-                                    })
-                                  }),
+                            labelText: "b (รัศมีแนวสั้น)",
+                            onChanged: calculate,
+                            controller: valueB,
+                          ),
                           SizedBox(
                             height: 10,
                           ),
@@ -97,7 +105,7 @@ class _EllipseCalcPage extends State<EllipseCalcPage> {
                                 fontSize: 16, fontWeight: FontWeight.w500),
                           ),
                           Text(
-                            "${(pi * a * b) / 4}",
+                            "$area",
                             style: TextStyle(
                                 fontSize: 26, fontWeight: FontWeight.bold),
                           ),
@@ -107,7 +115,7 @@ class _EllipseCalcPage extends State<EllipseCalcPage> {
                                 fontSize: 16, fontWeight: FontWeight.w500),
                           ),
                           Text(
-                            "${(pi * (a + b)) / 2}",
+                            "$peri",
                             style: TextStyle(
                                 fontSize: 26, fontWeight: FontWeight.bold),
                           )
