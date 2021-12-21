@@ -76,7 +76,7 @@ class _SquareCalcPage extends State<SquareCalcPage> {
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
           child: CustomPaint(
-            painter: GraphicsVisual(),
+            painter: GraphicsVisual(area, peri),
           ),
         ),
         AnimatedPositioned(
@@ -160,23 +160,20 @@ class _SquareCalcPage extends State<SquareCalcPage> {
                               Visibility(
                                   visible: isFromAVisible,
                                   child: Positioned(
-                                      child: 
-                                      NumberField(
-                                        labelText: "a",
-                                        onChanged: calculateFromA,
-                                        controller: valueA,
-                                      ),
-                                    )),
+                                    child: NumberField(
+                                      labelText: "a",
+                                      onChanged: calculateFromA,
+                                      controller: valueA,
+                                    ),
+                                  )),
                               Visibility(
                                   visible: isFromBVisible,
                                   child: Positioned(
-                                    child: 
-                                        NumberField(
-                                          labelText: "b",
-                                          onChanged: calculateFromB,
-                                          controller: valueB,
-                                        ),
-                                    
+                                    child: NumberField(
+                                      labelText: "b",
+                                      onChanged: calculateFromB,
+                                      controller: valueB,
+                                    ),
                                   )),
                             ],
                           ),
@@ -226,6 +223,10 @@ class _SquareCalcPage extends State<SquareCalcPage> {
 }
 
 class GraphicsVisual extends CustomPainter {
+  double area = 0;
+  double peri = 0;
+  GraphicsVisual(area, peri);
+
   @override
   void paint(Canvas canvas, Size size) {
     final paint = new Paint()
@@ -234,6 +235,22 @@ class GraphicsVisual extends CustomPainter {
       ..style = PaintingStyle.stroke;
 
     final recSize = size.width * 0.7;
+
+    final textPainter = TextPainter(
+        text: TextSpan(
+          text: "$area",
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 30,
+          ),
+        ),
+        textDirection: TextDirection.ltr,
+        textAlign: TextAlign.center);
+    textPainter.layout(minWidth: 0, maxWidth: 1000);
+    Offset drawPosition = Offset(
+        (size.width - textPainter.width) / 2, (size.height - recSize) / 2 - 45);
+
+    textPainter.paint(canvas, drawPosition);
 
     final rect = Rect.fromLTWH((size.width - recSize) / 2,
         (size.height - recSize) / 2, recSize, recSize);
@@ -244,6 +261,6 @@ class GraphicsVisual extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
     // TODO: implement shouldRepaint
-    return false;
+    return true;
   }
 }

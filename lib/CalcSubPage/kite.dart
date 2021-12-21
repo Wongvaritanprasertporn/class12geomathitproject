@@ -68,7 +68,7 @@ class _KiteCalcPage extends State<KiteCalcPage> {
       }
     }
 
-    calculateFromAb() {
+    calculateFromAb(String string) {
       double a = double.tryParse(valueA.text) ?? 0;
       double b = double.tryParse(valueB.text) ?? 0;
       double c = 0;
@@ -166,61 +166,63 @@ class _KiteCalcPage extends State<KiteCalcPage> {
                               Stack(
                                 children: [
                                   Visibility(
-                                    visible: isFromCdVisible,
+                                      visible: isFromCdVisible,
                                       child: Positioned(
                                           child: Column(
-                                    children: [
-                                      NumberField(
-                                        labelText: "c",
-                                        onChanged: calculateFromCd,
-                                        controller: valueC,
-                                      ),
-                                      NumberField(
-                                        labelText: "d",
-                                        onChanged: calculateFromCd,
-                                        controller: valueD,
-                                      ),
-                                      Text(
-                                        "พื้นที่",
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w500),
-                                      ),
-                                      Text(
-                                        "", //"${0.5 * c * d}",
-                                        style: TextStyle(
-                                            fontSize: 26,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                    ],
-                                  ))),
+                                        children: [
+                                          NumberField(
+                                            labelText: "c",
+                                            onChanged: calculateFromCd,
+                                            controller: valueC,
+                                          ),
+                                          NumberField(
+                                            labelText: "d",
+                                            onChanged: calculateFromCd,
+                                            controller: valueD,
+                                          ),
+                                          SizedBox(height: 10),
+                                          Text(
+                                            "พื้นที่",
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w500),
+                                          ),
+                                          Text(
+                                            "$area",
+                                            style: TextStyle(
+                                                fontSize: 26,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ],
+                                      ))),
                                   Visibility(
-                                    visible: isFromAbVisible,
+                                      visible: isFromAbVisible,
                                       child: Positioned(
                                           child: Column(children: [
-                                    NumberField(
-                                      labelText: "a",
-                                      onChanged: calculateFromAb,
-                                      controller: valueA,
-                                    ),
-                                    NumberField(
-                                      labelText: "b",
-                                      onChanged: calculateFromAb,
-                                      controller: valueB,
-                                    ),
-                                    Text(
-                                      "เส้นรอบรูป",
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w500),
-                                    ),
-                                    Text(
-                                      "", //"${2 * (a + b)}",
-                                      style: TextStyle(
-                                          fontSize: 26,
-                                          fontWeight: FontWeight.bold),
-                                    )
-                                  ])))
+                                        NumberField(
+                                          labelText: "a",
+                                          onChanged: calculateFromAb,
+                                          controller: valueA,
+                                        ),
+                                        NumberField(
+                                          labelText: "b",
+                                          onChanged: calculateFromAb,
+                                          controller: valueB,
+                                        ),
+                                        SizedBox(height: 10),
+                                        Text(
+                                          "เส้นรอบรูป",
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w500),
+                                        ),
+                                        Text(
+                                          "$peri",
+                                          style: TextStyle(
+                                              fontSize: 26,
+                                              fontWeight: FontWeight.bold),
+                                        )
+                                      ])))
                                 ],
                               ),
                             ],

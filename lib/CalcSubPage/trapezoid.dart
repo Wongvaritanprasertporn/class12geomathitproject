@@ -108,7 +108,7 @@ class _TrapezoidCalcPage extends State<TrapezoidCalcPage> {
                                   fontSize: 16, fontWeight: FontWeight.w500),
                             ),
                             Text(
-                              "$area}",
+                              "$area",
                               style: TextStyle(
                                   fontSize: 26, fontWeight: FontWeight.bold),
                             ),

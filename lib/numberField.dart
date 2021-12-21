@@ -61,7 +61,7 @@ class _NumberField extends State<NumberField> {
       decoration: new InputDecoration(labelText: labelText),
       keyboardType: TextInputType.number,
       inputFormatters: <TextInputFormatter>[
-        FilteringTextInputFormatter.allow(RegExp('^-?[0-9,]*\\.?[0-9,]*\$')),
+        FilteringTextInputFormatter.allow(RegExp('^[0-9,]*\\.?[0-9,]*\$')),
       ],
       onChanged: onChanged,
       controller: controller,

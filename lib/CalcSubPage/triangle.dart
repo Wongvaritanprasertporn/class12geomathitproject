@@ -136,6 +136,11 @@ class _TriangleCalcPage extends State<TriangleCalcPage> {
                                           _triangleAreaFormula = value;
                                           isFromAhVisible = true;
                                           isFromAbcVisible = false;
+                                          valueA.text = "";
+                                          valueB.text = "";
+                                          valueC.text = "";
+                                          area = 0;
+                                          peri = 0;
                                         });
                                       },
                                     ),
@@ -151,6 +156,10 @@ class _TriangleCalcPage extends State<TriangleCalcPage> {
                                           _triangleAreaFormula = value;
                                           isFromAhVisible = false;
                                           isFromAbcVisible = true;
+                                          valueA.text = "";
+                                          valueH.text = "";
+                                          area = 0;
+                                          peri = 0;
                                         });
                                       },
                                     ),

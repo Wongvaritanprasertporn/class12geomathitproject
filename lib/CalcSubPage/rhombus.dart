@@ -68,16 +68,18 @@ class _RhombusCalcPage extends State<RhombusCalcPage> {
       }
     }
 
-    calculateFromBc() {
+    calculateFromBc(String string) {
+      double a = 0;
       double b = double.tryParse(valueB.text) ?? 0;
       double c = double.tryParse(valueC.text) ?? 0;
 
       if (b != 0 && c != 0) {
         setState(() {
           area = 0.5 * b * c;
-          //peri
-          //valueA
-          //valueB
+          a = sqrt(pow(b / 2, 2) + pow(c / 2, 2));
+          peri = 4 * a;
+          valueA.text = a.toString();
+          valueH.text = (area / a).toString();
         });
       }
     }
