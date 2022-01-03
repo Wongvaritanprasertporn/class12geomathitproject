@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:geomath/numberField.dart';
 
@@ -23,6 +25,11 @@ class _RectangleCalcPage extends State<RectangleCalcPage> {
   Size? _size;
 
   var threshold = 100;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -53,8 +60,9 @@ class _RectangleCalcPage extends State<RectangleCalcPage> {
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
         child: CustomPaint(
-          painter: GraphicsVisual(double.tryParse(valueA.text) ?? 0,
-              double.tryParse(valueB.text) ?? 0),
+          painter: GraphicsVisual(
+              a: double.tryParse(valueA.text) ?? 0,
+              b: double.tryParse(valueB.text) ?? 0),
         ),
       ),
       AnimatedPositioned(
@@ -69,17 +77,16 @@ class _RectangleCalcPage extends State<RectangleCalcPage> {
               this.setState(() {
                 showBottomMenu = false;
               });
-              print(details.velocity.pixelsPerSecond.dy.toString());
             } else if (details.velocity.pixelsPerSecond.dy < -threshold) {
               this.setState(() {
                 showBottomMenu = true;
               });
-              print(details.velocity.pixelsPerSecond.dy.toString());
             }
           },
           child: Container(
             key: _widgetKey,
             decoration: BoxDecoration(
+              color: Colors.white,
               border: Border.all(
                 color: Colors.black38,
               ),
@@ -159,26 +166,89 @@ class _RectangleCalcPage extends State<RectangleCalcPage> {
 class GraphicsVisual extends CustomPainter {
   double a = 0;
   double b = 0;
-  GraphicsVisual(a, b);
+  GraphicsVisual({required this.a, required this.b});
 
   @override
   void paint(Canvas canvas, Size size) {
     final paint = new Paint()
-      ..color = Colors.blue
-      ..strokeWidth = 5
+      ..color = Colors.black
+      ..strokeWidth = 2
       ..style = PaintingStyle.stroke;
 
-    final rect =
-        Rect.fromLTWH(10, 10, size.width * 0.7, (a / b) * (size.width * 0.7));
+    a = double.parse(a.toStringAsFixed(4));
+    b = double.parse(b.toStringAsFixed(4));
+
+    final border = size.width * 0.8;
+    final rectHeight1 = (a / b) * border;
+    final rectWidth2 = (b / a) * border;
+
+    var rect;
+
+    if (rectHeight1 < size.height * 0.8) {
+      rect = Rect.fromLTWH((size.width - border) / 2,
+          (size.height - rectHeight1) / 2, border, rectHeight1);
+    } else {
+      rect = Rect.fromLTWH((size.width - rectWidth2) / 2,
+          (size.height - border) / 2, rectWidth2, border);
+    }
+
+    final textA = TextPainter(
+        text: TextSpan(
+          text: "$a",
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        textDirection: TextDirection.ltr,
+        textAlign: TextAlign.center);
+
+    final textB = TextPainter(
+        text: TextSpan(
+          text: "$b",
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        textDirection: TextDirection.ltr,
+        textAlign: TextAlign.center);
+
+    textA.layout(minWidth: 0, maxWidth: 1000);
+    textB.layout(minWidth: 0, maxWidth: 1000);
+
+    Offset aDrawPos = Offset(0, 0);
+
+    Offset bDrawPos = Offset(0, 0);
+
+    if (rectHeight1 < size.height * 0.8) {
+      aDrawPos = Offset(
+          (size.height - textA.width) / 2, (size.width - border) / 2 - 30);
+      bDrawPos = Offset(
+          (size.width - textB.width) / 2, (size.height - rectHeight1) / 2 - 30);
+    } else {
+      aDrawPos = Offset(
+          (size.height - textA.width) / 2, (size.width - rectWidth2) / 2 - 30);
+      bDrawPos = Offset(
+          (size.width - textB.width) / 2, (size.height - border) / 2 - 30);
+    }
 
     if (a != 0 && b != 0) {
       canvas.drawRect(rect, paint);
+      textB.paint(canvas, bDrawPos);
+
+      canvas.save();
+      canvas.rotate(-0.5 * pi);
+      canvas.translate(-(aDrawPos.dx * 2 + textA.width), 0);
+      textA.paint(canvas, aDrawPos);
+      canvas.restore();
     }
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    // TODO: implement shouldRepaint
-    return true;
+  bool shouldRepaint(covariant GraphicsVisual oldDelegate) {
+    return oldDelegate.a != a || oldDelegate.b != b;
   }
 }

@@ -55,7 +55,6 @@ class _SquareCalcPage extends State<SquareCalcPage> {
         area = pow(gettedNumber, 2);
         peri = gettedNumber * 4;
         valueB.text = sqrt(pow(gettedNumber, 2) * 2).toString();
-        print("area = $area; peri = $peri; valueB = ${valueB.text}");
       });
     }
 
@@ -65,7 +64,6 @@ class _SquareCalcPage extends State<SquareCalcPage> {
         area = 0.5 * pow(gettedNumber, 2);
         peri = sqrt(0.5 * pow(gettedNumber, 2)) * 4;
         valueA.text = sqrt(pow(gettedNumber, 2) / 2).toString();
-        print("area = $area; peri = $peri; valueA = ${valueA.text}");
       });
     }
 
@@ -76,7 +74,7 @@ class _SquareCalcPage extends State<SquareCalcPage> {
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
           child: CustomPaint(
-            painter: GraphicsVisual(area, peri),
+            painter: GraphicsVisual(a: double.tryParse(valueA.text) ?? 0),
           ),
         ),
         AnimatedPositioned(
@@ -91,12 +89,10 @@ class _SquareCalcPage extends State<SquareCalcPage> {
                 this.setState(() {
                   showBottomMenu = false;
                 });
-                print(details.velocity.pixelsPerSecond.dy.toString());
               } else if (details.velocity.pixelsPerSecond.dy < -threshold) {
                 this.setState(() {
                   showBottomMenu = true;
                 });
-                print(details.velocity.pixelsPerSecond.dy.toString());
               }
             },
             child: Container(
@@ -223,32 +219,34 @@ class _SquareCalcPage extends State<SquareCalcPage> {
 }
 
 class GraphicsVisual extends CustomPainter {
-  double area = 0;
-  double peri = 0;
-  GraphicsVisual(area, peri);
+  double a = 0;
+  GraphicsVisual({required this.a});
 
   @override
   void paint(Canvas canvas, Size size) {
     final paint = new Paint()
-      ..color = Colors.blue
-      ..strokeWidth = 5
+      ..color = Colors.black
+      ..strokeWidth = 2
       ..style = PaintingStyle.stroke;
 
-    final recSize = size.width * 0.7;
+    a = double.parse(a.toStringAsFixed(4));
+
+    final recSize = size.width * 0.8;
 
     final textPainter = TextPainter(
         text: TextSpan(
-          text: "$area",
+          text: "$a",
           style: TextStyle(
             color: Colors.black,
-            fontSize: 30,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
           ),
         ),
         textDirection: TextDirection.ltr,
         textAlign: TextAlign.center);
     textPainter.layout(minWidth: 0, maxWidth: 1000);
     Offset drawPosition = Offset(
-        (size.width - textPainter.width) / 2, (size.height - recSize) / 2 - 45);
+        (size.width - textPainter.width) / 2, (size.height - recSize) / 2 - 30);
 
     textPainter.paint(canvas, drawPosition);
 
@@ -259,8 +257,7 @@ class GraphicsVisual extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    // TODO: implement shouldRepaint
-    return true;
+  bool shouldRepaint(GraphicsVisual oldDelegate) {
+    return oldDelegate.a != a;
   }
 }

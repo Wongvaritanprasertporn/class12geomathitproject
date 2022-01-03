@@ -57,7 +57,7 @@ class _RhombusCalcPage extends State<RhombusCalcPage> {
       double b = 0;
       double h = double.tryParse(valueH.text) ?? 0;
 
-      if (a != 0 && h != 0) {
+      if (a != 0 && h != 0 && h < a) {
         setState(() {
           area = a * h;
           peri = 4 * a;
@@ -65,6 +65,13 @@ class _RhombusCalcPage extends State<RhombusCalcPage> {
           valueB.text = b.toString();
           valueC.text = (sqrt(pow(a, 2) - pow((b / 2), 2)) * 2).toString();
         });
+      }
+      else if (h >= a && a != 0) {
+        valueH.text = valueH.text.substring(0, valueH.text.length - 1);
+      }
+      else if (a == 0 && h == 0){
+        valueB.text = "";
+        valueC.text = "";
       }
     }
 
@@ -82,10 +89,25 @@ class _RhombusCalcPage extends State<RhombusCalcPage> {
           valueH.text = (area / a).toString();
         });
       }
+      else {
+        valueA.text = "";
+        valueH.text = "";
+      }
     }
 
     return Container(
       child: Stack(children: [
+        Container(
+          color: Colors.white,
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          child: CustomPaint(
+            painter: GraphicsVisual(
+                a: double.tryParse(valueA.text) ?? 0,
+                h: double.tryParse(valueH.text) ?? 0,
+                mode: _rhombusAreaFormula),
+          ),
+        ),
         AnimatedPositioned(
           key: _animatedPos,
           curve: Curves.easeInOut,
@@ -109,6 +131,7 @@ class _RhombusCalcPage extends State<RhombusCalcPage> {
             child: Container(
               key: _widgetKey,
               decoration: BoxDecoration(
+                color: Colors.white,
                 border: Border.all(
                   color: Colors.black38,
                 ),
@@ -204,6 +227,7 @@ class _RhombusCalcPage extends State<RhombusCalcPage> {
                           ),
                         ),
                       ]),
+                      SizedBox(height: 10,),
                       Text(
                         "พื้นที่",
                         style: TextStyle(
@@ -233,5 +257,133 @@ class _RhombusCalcPage extends State<RhombusCalcPage> {
         )
       ]),
     );
+  }
+}
+
+class GraphicsVisual extends CustomPainter {
+  double a = 0;
+  double h = 0;
+  RhombusAreaFormula? mode;
+
+  GraphicsVisual({required this.a, required this.h, required this.mode});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = new Paint()
+        ..color = Colors.black
+        ..strokeWidth = 2
+        ..style = PaintingStyle.stroke;
+
+    a = double.parse(a.toStringAsFixed(4));
+    h = double.parse(h.toStringAsFixed(4));
+
+    double border = size.width * 0.1;
+
+    double shift = sqrt(pow(a, 2) - pow(h, 2));
+    double totalWidth = shift + a;
+    double scaleForm = (size.width * 0.8) / totalWidth;
+
+    double scaledShift = scaleForm * shift;
+    double scaledA = scaleForm * a;
+    double scaledH = scaleForm * h;
+    double topBorder = (size.height - scaledH) / 2;
+
+    Offset angleA = Offset(border + scaledShift, topBorder);
+    Offset angleB = Offset(size.width * 0.9, topBorder);
+    Offset angleC = Offset(border, topBorder + scaledH);
+    Offset angleD = Offset(border + scaledA, topBorder + scaledH);
+    Offset pointHB = Offset(border + scaledShift, topBorder + scaledH);
+
+    final textA = TextPainter(
+      text: TextSpan(
+        text: "$a",
+        style: TextStyle(
+          color: Colors.black,
+          fontSize: 18,
+          fontWeight: FontWeight.bold
+        )
+      ),
+      textDirection: TextDirection.ltr,
+      textAlign: TextAlign.center,
+    );
+
+    final textB = TextPainter(
+      text: TextSpan(
+          text: "$a",
+          style: TextStyle(
+              color: Colors.black,
+              fontSize: 18,
+              fontWeight: FontWeight.bold
+          )
+      ),
+      textDirection: TextDirection.ltr,
+      textAlign: TextAlign.center,
+    );
+
+    final textC = TextPainter(
+      text: TextSpan(
+          text: "$a",
+          style: TextStyle(
+              color: Colors.black,
+              fontSize: 18,
+              fontWeight: FontWeight.bold
+          )
+      ),
+      textDirection: TextDirection.ltr,
+      textAlign: TextAlign.center,
+    );
+
+    final textH = TextPainter(
+      text: TextSpan(
+          text: "$h",
+          style: TextStyle(
+              color: Colors.black,
+              fontSize: 18,
+              fontWeight: FontWeight.bold
+          )
+      ),
+      textDirection: TextDirection.ltr,
+      textAlign: TextAlign.center,
+    );
+
+    textA.layout(minWidth: 0, maxWidth: 500);
+    textB.layout(minWidth: 0, maxWidth: 500);
+    textC.layout(minWidth: 0, maxWidth: 500);
+    textH.layout(minWidth: 0, maxWidth: 500);
+
+    Offset textPos = Offset(0, 0);
+
+    if(a != 0 && h != 0) {
+      canvas.drawLine(angleA, angleB, paint);
+      canvas.drawLine(angleA, angleC, paint);
+      canvas.drawLine(angleB, angleD, paint);
+      canvas.drawLine(angleC, angleD, paint);
+
+      canvas.save();
+      double seta = asin(scaledH / scaledA);
+      Offset halfOfA = Offset(border + (scaledShift / 2), (topBorder + scaledH) - (scaledH / 2));
+      canvas.translate(border + (scaledShift / 2) , (size.height / 2) - textA.height);
+      canvas.rotate(-seta);
+      canvas.translate(-(textA.width / 2), -10);
+      textA.paint(canvas, textPos);
+      canvas.restore();
+
+      // เส้นทแยงมุม
+      if(mode == RhombusAreaFormula.fromBC) {
+        canvas.drawLine(angleA, angleD, paint);
+        canvas.drawLine(angleC, angleB, paint);
+      }
+      // สูง
+      else if(mode == RhombusAreaFormula.fromAH) {
+        canvas.drawLine(pointHB, angleA, paint);
+        textH.paint(canvas, Offset(border + scaledShift - textH.width - 10,(size.height - textH.height) / 2));
+      }
+
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant GraphicsVisual oldDelegate) {
+    return oldDelegate.a != a || oldDelegate.h != h;
   }
 }
