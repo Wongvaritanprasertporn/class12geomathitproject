@@ -61,9 +61,10 @@ class _KiteCalcPage extends State<KiteCalcPage> {
       if (c != 0 && d != 0) {
         setState(() {
           area = 0.5 * c * d;
-          valueA.text = sqrt(pow((c / 2), 2) + pow((c / 2), 2)).toString();
-          valueB.text =
-              sqrt(pow((c / 2), 2) + pow((d - (c / 2)), 2)).toString();
+        });
+      } else {
+        setState(() {
+          area = 0;
         });
       }
     }
@@ -71,21 +72,40 @@ class _KiteCalcPage extends State<KiteCalcPage> {
     calculateFromAb(String string) {
       double a = double.tryParse(valueA.text) ?? 0;
       double b = double.tryParse(valueB.text) ?? 0;
-      double c = 0;
-
-      c = a / sqrt(2);
 
       if (a != 0 && b != 0) {
+        if (a >= b) {
+          setState(() {
+            a = b - 1;
+            valueA.text = a.toString();
+          });
+        }
         setState(() {
           peri = 2 * (a + b);
-          valueC.text = c.toString();
-          valueD.text = (sqrt(pow(b, 2) - pow(c, 2)) + c).toString();
+        });
+      } else {
+        setState(() {
+          peri = 0;
         });
       }
     }
 
     return Container(
       child: Stack(children: [
+        Container(
+          color: Colors.white,
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          child: CustomPaint(
+            painter: GraphicsVisual(
+              a: double.tryParse(valueA.text) ?? 0,
+              b: double.tryParse(valueB.text) ?? 0,
+              c: double.tryParse(valueC.text) ?? 0,
+              d: double.tryParse(valueD.text) ?? 0,
+              mode: _kiteAreaFormula,
+            ),
+          ),
+        ),
         AnimatedPositioned(
           key: _animatedPos,
           curve: Curves.easeInOut,
@@ -109,6 +129,7 @@ class _KiteCalcPage extends State<KiteCalcPage> {
             child: Container(
               key: _widgetKey,
               decoration: BoxDecoration(
+                color: Colors.white,
                 border: Border.all(
                   color: Colors.black38,
                 ),
@@ -236,5 +257,181 @@ class _KiteCalcPage extends State<KiteCalcPage> {
         ),
       ]),
     );
+  }
+}
+
+class GraphicsVisual extends CustomPainter {
+  double a = 0;
+  double b = 0;
+  double c = 0;
+  double d = 0;
+  KiteAreaFormula? mode;
+  GraphicsVisual(
+      {required this.a,
+      required this.b,
+      required this.c,
+      required this.d,
+      required this.mode});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = new Paint()
+      ..color = Colors.black
+      ..strokeWidth = 2
+      ..style = PaintingStyle.stroke;
+
+    a = double.parse(a.toStringAsFixed(4));
+    b = double.parse(b.toStringAsFixed(4));
+    c = double.parse(c.toStringAsFixed(4));
+    d = double.parse(d.toStringAsFixed(4));
+
+    double leftBorder = size.width * 0.1;
+    double topBorder = size.height * 0.1;
+
+    double graphicAreaHeight = size.height * 0.8;
+    double graphicAreaWidth = size.width * 0.8;
+
+    if (mode == KiteAreaFormula.fromCD) {
+      double scaleForm = 0;
+      if (d / c <= graphicAreaWidth / graphicAreaHeight) {
+        scaleForm = graphicAreaHeight / c;
+        leftBorder = (size.width - (scaleForm * d)) / 2;
+      } else {
+        scaleForm = graphicAreaWidth / d;
+        topBorder = (size.height - (scaleForm * c)) / 2;
+      }
+      double scaledC = scaleForm * c;
+      double scaledD = scaleForm * d;
+      double interCD = (1 / 3) * scaledC;
+
+      Offset angleA = Offset(size.width / 2, topBorder);
+      Offset angleB = Offset(leftBorder, topBorder + interCD);
+      Offset angleC = Offset(size.width - leftBorder, topBorder + interCD);
+      Offset angleD = Offset(size.width / 2, size.height - topBorder);
+
+      final textC = TextPainter(
+          text: TextSpan(
+              text: "$c",
+              style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold)),
+          textDirection: TextDirection.ltr,
+          textAlign: TextAlign.center);
+
+      final textD = TextPainter(
+          text: TextSpan(
+              text: "$d",
+              style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold)),
+          textDirection: TextDirection.ltr,
+          textAlign: TextAlign.center);
+
+      textC.layout(minWidth: 0, maxWidth: 500);
+      textD.layout(minWidth: 0, maxWidth: 500);
+
+      if (c != 0 && d != 0) {
+        canvas.drawLine(angleA, angleB, paint);
+        canvas.drawLine(angleB, angleD, paint);
+        canvas.drawLine(angleC, angleD, paint);
+        canvas.drawLine(angleC, angleA, paint);
+        canvas.drawLine(angleA, angleD, paint);
+        canvas.drawLine(angleB, angleC, paint);
+
+        canvas.save();
+        canvas.translate(
+            size.width / 2, topBorder + interCD + (scaledC - interCD) / 2);
+        canvas.rotate(-pi / 2);
+        canvas.translate(textC.width / 2, -textC.height - 10);
+        textC.paint(canvas, Offset(0, 0));
+        canvas.restore();
+
+        textD.paint(
+            canvas,
+            Offset(leftBorder + (scaledD - textD.width) / 4,
+                topBorder + interCD - textD.height - 10));
+      }
+    } else {
+      double resultD = cos(pi / 6) * a * 2;
+      double resultC = cos(pi / 3) * a + sqrt(pow(b, 2) - pow(resultD / 2, 2));
+
+      double scaleForm = 0;
+      if (resultD / resultC <= graphicAreaWidth / graphicAreaHeight) {
+        scaleForm = graphicAreaHeight / resultC;
+        leftBorder = (size.width - (scaleForm * resultD)) / 2;
+      } else {
+        scaleForm = graphicAreaWidth / resultD;
+        topBorder = (size.height - (scaleForm * resultC)) / 2;
+      }
+
+      double scaledA = scaleForm * a;
+      double scaledC = scaleForm * resultC;
+      double scaledD = scaleForm * resultD;
+
+      double interCD = cos(pi / 3) * scaledA;
+
+      Offset angleA = Offset(size.width / 2, topBorder);
+      Offset angleB = Offset(leftBorder, topBorder + interCD);
+      Offset angleC = Offset(size.width - leftBorder, topBorder + interCD);
+      Offset angleD = Offset(size.width / 2, size.height - topBorder);
+
+      final textA = TextPainter(
+          text: TextSpan(
+              text: "$a",
+              style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold)),
+          textDirection: TextDirection.ltr,
+          textAlign: TextAlign.center);
+
+      final textB = TextPainter(
+          text: TextSpan(
+              text: "$b",
+              style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold)),
+          textDirection: TextDirection.ltr,
+          textAlign: TextAlign.center);
+
+      textA.layout(minWidth: 0, maxWidth: 500);
+      textB.layout(minWidth: 0, maxWidth: 500);
+
+      if (a != 0 && b != 0) {
+        canvas.drawLine(angleA, angleB, paint);
+        canvas.drawLine(angleB, angleD, paint);
+        canvas.drawLine(angleC, angleD, paint);
+        canvas.drawLine(angleC, angleA, paint);
+        canvas.drawLine(angleA, angleD, paint);
+        canvas.drawLine(angleB, angleC, paint);
+
+        canvas.save();
+        canvas.translate(leftBorder + (scaledD / 4), topBorder + interCD / 2);
+        canvas.rotate(-acos((resultD / 2) / a));
+        canvas.translate(-textA.width / 2, -textA.height - 10);
+        textA.paint(canvas, Offset(0, 0));
+        canvas.restore();
+
+        canvas.save();
+        canvas.translate(leftBorder + (scaledD / 4),
+            topBorder + interCD + (scaledC - interCD) / 2);
+        canvas.rotate(acos((resultD / 2) / b));
+        canvas.translate(-textB.width / 2, 10);
+        textB.paint(canvas, Offset(0, 0));
+        canvas.restore();
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant GraphicsVisual oldDelegate) {
+    return oldDelegate.a != a ||
+        oldDelegate.b != b ||
+        oldDelegate.c != c ||
+        oldDelegate.d != d ||
+        oldDelegate.mode != mode;
   }
 }

@@ -57,7 +57,13 @@ class _RhombusCalcPage extends State<RhombusCalcPage> {
       double b = 0;
       double h = double.tryParse(valueH.text) ?? 0;
 
-      if (a != 0 && h != 0 && h < a) {
+      if (a != 0 && h != 0) {
+        if (h >= a) {
+          setState(() {
+            h = a - 1;
+            valueH.text = h.toString();
+          });
+        }
         setState(() {
           area = a * h;
           peri = 4 * a;
@@ -65,13 +71,11 @@ class _RhombusCalcPage extends State<RhombusCalcPage> {
           valueB.text = b.toString();
           valueC.text = (sqrt(pow(a, 2) - pow((b / 2), 2)) * 2).toString();
         });
-      }
-      else if (h >= a && a != 0) {
-        valueH.text = valueH.text.substring(0, valueH.text.length - 1);
-      }
-      else if (a == 0 && h == 0){
-        valueB.text = "";
-        valueC.text = "";
+      } else {
+        setState(() {
+          valueB.text = "";
+          valueC.text = "";
+        });
       }
     }
 
@@ -88,10 +92,11 @@ class _RhombusCalcPage extends State<RhombusCalcPage> {
           valueA.text = a.toString();
           valueH.text = (area / a).toString();
         });
-      }
-      else {
-        valueA.text = "";
-        valueH.text = "";
+      } else {
+        setState(() {
+          valueA.text = "";
+          valueH.text = "";
+        });
       }
     }
 
@@ -227,7 +232,9 @@ class _RhombusCalcPage extends State<RhombusCalcPage> {
                           ),
                         ),
                       ]),
-                      SizedBox(height: 10,),
+                      SizedBox(
+                        height: 10,
+                      ),
                       Text(
                         "พื้นที่",
                         style: TextStyle(
@@ -270,9 +277,9 @@ class GraphicsVisual extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = new Paint()
-        ..color = Colors.black
-        ..strokeWidth = 2
-        ..style = PaintingStyle.stroke;
+      ..color = Colors.black
+      ..strokeWidth = 2
+      ..style = PaintingStyle.stroke;
 
     a = double.parse(a.toStringAsFixed(4));
     h = double.parse(h.toStringAsFixed(4));
@@ -296,13 +303,9 @@ class GraphicsVisual extends CustomPainter {
 
     final textA = TextPainter(
       text: TextSpan(
-        text: "$a",
-        style: TextStyle(
-          color: Colors.black,
-          fontSize: 18,
-          fontWeight: FontWeight.bold
-        )
-      ),
+          text: "$a",
+          style: TextStyle(
+              color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold)),
       textDirection: TextDirection.ltr,
       textAlign: TextAlign.center,
     );
@@ -311,11 +314,7 @@ class GraphicsVisual extends CustomPainter {
       text: TextSpan(
           text: "$a",
           style: TextStyle(
-              color: Colors.black,
-              fontSize: 18,
-              fontWeight: FontWeight.bold
-          )
-      ),
+              color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold)),
       textDirection: TextDirection.ltr,
       textAlign: TextAlign.center,
     );
@@ -324,11 +323,7 @@ class GraphicsVisual extends CustomPainter {
       text: TextSpan(
           text: "$a",
           style: TextStyle(
-              color: Colors.black,
-              fontSize: 18,
-              fontWeight: FontWeight.bold
-          )
-      ),
+              color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold)),
       textDirection: TextDirection.ltr,
       textAlign: TextAlign.center,
     );
@@ -337,11 +332,7 @@ class GraphicsVisual extends CustomPainter {
       text: TextSpan(
           text: "$h",
           style: TextStyle(
-              color: Colors.black,
-              fontSize: 18,
-              fontWeight: FontWeight.bold
-          )
-      ),
+              color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold)),
       textDirection: TextDirection.ltr,
       textAlign: TextAlign.center,
     );
@@ -353,7 +344,7 @@ class GraphicsVisual extends CustomPainter {
 
     Offset textPos = Offset(0, 0);
 
-    if(a != 0 && h != 0) {
+    if (a != 0 && h != 0) {
       canvas.drawLine(angleA, angleB, paint);
       canvas.drawLine(angleA, angleC, paint);
       canvas.drawLine(angleB, angleD, paint);
@@ -361,24 +352,26 @@ class GraphicsVisual extends CustomPainter {
 
       canvas.save();
       double seta = asin(scaledH / scaledA);
-      Offset halfOfA = Offset(border + (scaledShift / 2), (topBorder + scaledH) - (scaledH / 2));
-      canvas.translate(border + (scaledShift / 2) , (size.height / 2) - textA.height);
+      canvas.translate(
+          border + (scaledShift / 2), (size.height / 2) - textA.height);
       canvas.rotate(-seta);
       canvas.translate(-(textA.width / 2), -10);
       textA.paint(canvas, textPos);
       canvas.restore();
 
       // เส้นทแยงมุม
-      if(mode == RhombusAreaFormula.fromBC) {
+      if (mode == RhombusAreaFormula.fromBC) {
         canvas.drawLine(angleA, angleD, paint);
         canvas.drawLine(angleC, angleB, paint);
       }
       // สูง
-      else if(mode == RhombusAreaFormula.fromAH) {
+      else if (mode == RhombusAreaFormula.fromAH) {
         canvas.drawLine(pointHB, angleA, paint);
-        textH.paint(canvas, Offset(border + scaledShift - textH.width - 10,(size.height - textH.height) / 2));
+        textH.paint(
+            canvas,
+            Offset(border + scaledShift - textH.width - 10,
+                (size.height - textH.height) / 2));
       }
-
     }
   }
 

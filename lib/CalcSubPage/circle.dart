@@ -40,6 +40,16 @@ class _CircleCalcPage extends State<CircleCalcPage> {
 
     return Container(
       child: Stack(children: [
+        Container(
+          color: Colors.white,
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          child: CustomPaint(
+            painter: GraphicsVisual(
+              r: double.tryParse(valueR.text) ?? 0,
+            ),
+          ),
+        ),
         AnimatedPositioned(
           key: _animatedPos,
           curve: Curves.easeInOut,
@@ -63,6 +73,7 @@ class _CircleCalcPage extends State<CircleCalcPage> {
             child: Container(
               key: _widgetKey,
               decoration: BoxDecoration(
+                color: Colors.white,
                 border: Border.all(
                   color: Colors.black38,
                 ),
@@ -124,5 +135,62 @@ class _CircleCalcPage extends State<CircleCalcPage> {
         ),
       ]),
     );
+  }
+}
+
+class GraphicsVisual extends CustomPainter {
+  double r = 0;
+  GraphicsVisual({required this.r});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    double diameter = r * 2;
+
+    final paint = new Paint()
+      ..color = Colors.black
+      ..strokeWidth = 2
+      ..style = PaintingStyle.stroke;
+
+    final textR = TextPainter(
+      text: TextSpan(
+          text: "$r",
+          style: TextStyle(
+              color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold)),
+      textDirection: TextDirection.ltr,
+      textAlign: TextAlign.center,
+    );
+    final textDiameter = TextPainter(
+      text: TextSpan(
+          text: "\u2300 = $diameter",
+          style: TextStyle(
+              color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold)),
+      textDirection: TextDirection.ltr,
+      textAlign: TextAlign.center,
+    );
+
+    textR.layout(minWidth: 0, maxWidth: 500);
+    textDiameter.layout(minWidth: 0, maxWidth: 500);
+
+    if (r != 0) {
+      canvas.drawCircle(Offset(size.width / 2, size.height / 2),
+          (size.width * 0.8) / 2, paint);
+      canvas.drawLine(Offset(size.width / 2, size.height / 2),
+          Offset(size.width * 0.9, size.height / 2), paint);
+
+      textR.paint(
+          canvas,
+          Offset(size.width * 0.7 - textR.width / 2,
+              (size.height / 2) - textR.height - 10));
+
+      textDiameter.paint(
+          canvas,
+          Offset((size.width - textDiameter.width) / 2,
+              (size.height / 2) - (size.width * 0.2) - textDiameter.height));
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant GraphicsVisual oldDelegate) {
+    return oldDelegate.r != r;
   }
 }

@@ -34,14 +34,27 @@ class _EllipseCalcPage extends State<EllipseCalcPage> {
       double a = double.tryParse(valueA.text) ?? 0;
       double b = double.tryParse(valueB.text) ?? 0;
 
-      setState(() {
-        area = (pi * a * b) / 4;
-        peri = (pi * (a + b)) / 2;
-      });
+      if (a != 0 && b != 0) {
+        setState(() {
+          area = (pi * a * b) / 4;
+          peri = (pi * (a + b)) / 2;
+        });
+      }
     }
 
     return Container(
       child: Stack(children: [
+        Container(
+          color: Colors.white,
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          child: CustomPaint(
+            painter: GraphicsVisual(
+              a: double.tryParse(valueA.text) ?? 0,
+              b: double.tryParse(valueB.text) ?? 0,
+            ),
+          ),
+        ),
         AnimatedPositioned(
           key: _animatedPos,
           curve: Curves.easeInOut,
@@ -65,6 +78,7 @@ class _EllipseCalcPage extends State<EllipseCalcPage> {
             child: Container(
               key: _widgetKey,
               decoration: BoxDecoration(
+                color: Colors.white,
                 border: Border.all(
                   color: Colors.black38,
                 ),
@@ -130,5 +144,90 @@ class _EllipseCalcPage extends State<EllipseCalcPage> {
         ),
       ]),
     );
+  }
+}
+
+class GraphicsVisual extends CustomPainter {
+  double a = 0;
+  double b = 0;
+  GraphicsVisual({required this.a, required this.b});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = new Paint()
+      ..color = Colors.black
+      ..strokeWidth = 2
+      ..style = PaintingStyle.stroke;
+
+    a = double.parse(a.toStringAsFixed(4));
+    b = double.parse(b.toStringAsFixed(4));
+
+    double graphicAreaHeight = size.height * 0.8;
+    double graphicAreaWidth = size.width * 0.8;
+
+    double scaleForm = 0;
+    double leftBorder = size.width * 0.1;
+    double topBorder = size.height * 0.1;
+
+    if (a / b <= graphicAreaWidth / graphicAreaHeight) {
+      scaleForm = graphicAreaHeight / b;
+      leftBorder = (size.width - (scaleForm * a)) / 2;
+    } else {
+      scaleForm = graphicAreaWidth / a;
+      topBorder = (size.height - (scaleForm * b)) / 2;
+    }
+
+    double scaledA = scaleForm * a;
+    double scaledB = scaleForm * b;
+
+    final rect = Rect.fromLTWH(leftBorder, topBorder, scaledA, scaledB);
+    final pointA = Offset(size.width / 2, topBorder);
+    final pointB = Offset(leftBorder, size.height / 2);
+    final pointC = Offset(leftBorder + scaledA, size.height / 2);
+    final pointD = Offset(size.width / 2, topBorder + scaledB);
+
+    final textA = TextPainter(
+        text: TextSpan(
+            text: "$a",
+            style: TextStyle(
+                color: Colors.black,
+                fontSize: 18,
+                fontWeight: FontWeight.bold)),
+        textDirection: TextDirection.ltr,
+        textAlign: TextAlign.center);
+
+    final textB = TextPainter(
+        text: TextSpan(
+            text: "$b",
+            style: TextStyle(
+                color: Colors.black,
+                fontSize: 18,
+                fontWeight: FontWeight.bold)),
+        textDirection: TextDirection.ltr,
+        textAlign: TextAlign.center);
+
+    textA.layout(minWidth: 0, maxWidth: 500);
+    textB.layout(minWidth: 0, maxWidth: 500);
+
+    if (a != 0 && b != 0) {
+      canvas.drawOval(rect, paint);
+      canvas.drawLine(pointA, pointD, paint);
+      canvas.drawLine(pointB, pointC, paint);
+
+      textA.paint(
+          canvas,
+          Offset(leftBorder + scaledA / 4 - textA.width / 2,
+              topBorder + scaledB / 2 - textA.height - 10));
+
+      textB.paint(
+          canvas,
+          Offset(leftBorder + scaledA / 2 + 10,
+              topBorder + (3 / 4 * scaledB) - (textB.height / 2)));
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant GraphicsVisual oldDelegate) {
+    return oldDelegate.a != a || oldDelegate.b != b;
   }
 }

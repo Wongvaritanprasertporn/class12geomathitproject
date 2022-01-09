@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:geomath/numberField.dart';
 
@@ -58,7 +56,7 @@ class _TrapezoidCalcPage extends State<TrapezoidCalcPage> {
           child: CustomPaint(
             painter: GraphicsVisual(
                 a: double.tryParse(valueA.text) ?? 0,
-              b: double.tryParse(valueB.text) ?? 0,
+                b: double.tryParse(valueB.text) ?? 0,
                 h: double.tryParse(valueH.text) ?? 0,
           ),
         ),
