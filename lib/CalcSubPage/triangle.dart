@@ -334,7 +334,6 @@ class GraphicsVisual extends CustomPainter {
     double graphicAreaHeight = size.height * 0.8;
     double graphicAreaWidth = size.width * 0.8;
 
-    double scaleForm = 0;
     double leftBorder = size.width * 0.1;
     double topBorder = size.height * 0.1;
 
@@ -347,9 +346,6 @@ class GraphicsVisual extends CustomPainter {
         scaleForm = graphicAreaWidth / a;
         topBorder = (size.height - (scaleForm * h)) / 2;
       }
-
-      double scaledA = scaleForm * a;
-      double scaledH = scaleForm * h;
 
       Offset angleA = Offset(size.width / 2, topBorder);
       Offset angleB = Offset(leftBorder, size.height - topBorder);
@@ -376,8 +372,6 @@ class GraphicsVisual extends CustomPainter {
       }
 
       double scaledA = scaleForm * a;
-      double scaledB = scaleForm * b;
-      double scaledC = scaleForm * c;
       double scaledH = scaleForm * h;
       double scaledInterAH = scaleForm * interAH;
 

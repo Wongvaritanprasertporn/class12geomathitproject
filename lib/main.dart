@@ -77,7 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
             body: TabBarView(children: [
               selectCalcPage(_selectedPage),
               SingleChildScrollView(
-                child: ShapePage(_selectedPage),
+                child: selectShapePage(_selectedPage),
               )
             ])));
   }
@@ -122,6 +122,33 @@ class _MyHomePageState extends State<MyHomePage> {
         return CircleCalcPage();
       case 10:
         return EllipseCalcPage();
+    }
+  }
+
+  selectShapePage(_selectedPage) {
+    switch (_selectedPage) {
+      case 0:
+        return SquareShapePage();
+      case 1:
+        return RectangleShapePage();
+      case 2:
+        return ParalellogramShapePage();
+      case 3:
+        return RhombusShapePage();
+      case 4:
+        return TrapezoidShapePage();
+      case 5:
+        return KiteShapePage();
+      case 6:
+        return TrapeziumShapePage();
+      case 7:
+        return TriangleShapePage();
+      case 8:
+        return RtriShapePage();
+      case 9:
+        return CircleShapePage();
+      case 10:
+        return EllipseShapePage();
     }
   }
 }
